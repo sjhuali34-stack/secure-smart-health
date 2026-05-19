@@ -191,10 +191,13 @@ function LoginPortal() {
               <MethodPrompt method={method} />
             </div>
 
-            <button className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-[14px] font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:bg-primary-hover">
+            <Link
+              to={selectedRole.to}
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-[14px] font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:bg-primary-hover"
+            >
               متابعة
               <ArrowLeft className="h-4 w-4" />
-            </button>
+            </Link>
 
             <div className="mt-5 flex items-center justify-between text-[11px]">
               <button className="text-muted-foreground hover:text-foreground">نسيت رقمك الصحي؟</button>

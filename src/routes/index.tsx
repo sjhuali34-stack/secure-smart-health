@@ -126,7 +126,7 @@ function LoginPortal() {
             {/* Role grid */}
             <div className="mb-6">
               <Label>الدور</Label>
-              <div className="mt-2 grid grid-cols-4 gap-2">
+              <div className="mt-2 grid grid-cols-5 gap-2">
                 {ROLES.map((r) => {
                   const Icon = r.icon;
                   const active = role === r.id;

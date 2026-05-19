@@ -21,17 +21,20 @@ type Role = {
   name: string;
   desc: string;
   icon: React.ComponentType<{ className?: string }>;
+  to: "/citizen" | "/doctor" | "/pharmacist" | "/nurse" | "/lab" | "/radiology" | "/emergency" | "/ministry" | "/community" | "/physio";
 };
 
 const ROLES: Role[] = [
-  { id: "citizen", name: "المواطن", desc: "السجل الصحي الشخصي", icon: User },
-  { id: "doctor", name: "الطبيب", desc: "التشخيص والوصفات", icon: Stethoscope },
-  { id: "pharmacist", name: "الصيدلي", desc: "صرف الأدوية", icon: Pill },
-  { id: "nurse", name: "التمريض", desc: "العلامات الحيوية", icon: HeartPulse },
-  { id: "lab", name: "المختبر", desc: "نتائج التحاليل", icon: FlaskConical },
-  { id: "radiology", name: "الأشعة", desc: "التصوير والتقارير", icon: ScanLine },
-  { id: "emergency", name: "الطوارئ", desc: "الوصول الإسعافي", icon: Activity },
-  { id: "ministry", name: "وزارة الصحة", desc: "اللوحة الوطنية", icon: Building2 },
+  { id: "citizen", name: "المواطن", desc: "السجل الصحي الشخصي", icon: User, to: "/citizen" },
+  { id: "doctor", name: "الطبيب", desc: "التشخيص والوصفات", icon: Stethoscope, to: "/doctor" },
+  { id: "pharmacist", name: "الصيدلي", desc: "صرف الأدوية", icon: Pill, to: "/pharmacist" },
+  { id: "nurse", name: "التمريض", desc: "العلامات الحيوية", icon: HeartPulse, to: "/nurse" },
+  { id: "lab", name: "المختبر", desc: "نتائج التحاليل", icon: FlaskConical, to: "/lab" },
+  { id: "radiology", name: "الأشعة", desc: "التصوير والتقارير", icon: ScanLine, to: "/radiology" },
+  { id: "emergency", name: "الطوارئ", desc: "الوصول الإسعافي", icon: Activity, to: "/emergency" },
+  { id: "ministry", name: "وزارة الصحة", desc: "اللوحة الوطنية", icon: Building2, to: "/ministry" },
+  { id: "community", name: "صحة المجتمع", desc: "زيارات وحملات", icon: HeartHandshake, to: "/community" },
+  { id: "physio", name: "العلاج الطبيعي", desc: "جلسات التأهيل", icon: Dumbbell, to: "/physio" },
 ];
 
 type Method = { id: string; name: string; icon: React.ComponentType<{ className?: string }> };

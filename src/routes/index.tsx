@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   User, Stethoscope, Pill, HeartPulse, FlaskConical, ScanLine,
   Activity, Building2, ShieldCheck, Fingerprint, ScanFace, KeyRound,
-  CreditCard, ArrowLeft, Globe, Lock,
+  CreditCard, ArrowLeft, Globe, Lock, HeartHandshake, Dumbbell,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -21,17 +21,20 @@ type Role = {
   name: string;
   desc: string;
   icon: React.ComponentType<{ className?: string }>;
+  to: "/citizen" | "/doctor" | "/pharmacist" | "/nurse" | "/lab" | "/radiology" | "/emergency" | "/ministry" | "/community" | "/physio";
 };
 
 const ROLES: Role[] = [
-  { id: "citizen", name: "المواطن", desc: "السجل الصحي الشخصي", icon: User },
-  { id: "doctor", name: "الطبيب", desc: "التشخيص والوصفات", icon: Stethoscope },
-  { id: "pharmacist", name: "الصيدلي", desc: "صرف الأدوية", icon: Pill },
-  { id: "nurse", name: "التمريض", desc: "العلامات الحيوية", icon: HeartPulse },
-  { id: "lab", name: "المختبر", desc: "نتائج التحاليل", icon: FlaskConical },
-  { id: "radiology", name: "الأشعة", desc: "التصوير والتقارير", icon: ScanLine },
-  { id: "emergency", name: "الطوارئ", desc: "الوصول الإسعافي", icon: Activity },
-  { id: "ministry", name: "وزارة الصحة", desc: "اللوحة الوطنية", icon: Building2 },
+  { id: "citizen", name: "المواطن", desc: "السجل الصحي الشخصي", icon: User, to: "/citizen" },
+  { id: "doctor", name: "الطبيب", desc: "التشخيص والوصفات", icon: Stethoscope, to: "/doctor" },
+  { id: "pharmacist", name: "الصيدلي", desc: "صرف الأدوية", icon: Pill, to: "/pharmacist" },
+  { id: "nurse", name: "التمريض", desc: "العلامات الحيوية", icon: HeartPulse, to: "/nurse" },
+  { id: "lab", name: "المختبر", desc: "نتائج التحاليل", icon: FlaskConical, to: "/lab" },
+  { id: "radiology", name: "الأشعة", desc: "التصوير والتقارير", icon: ScanLine, to: "/radiology" },
+  { id: "emergency", name: "الطوارئ", desc: "الوصول الإسعافي", icon: Activity, to: "/emergency" },
+  { id: "ministry", name: "وزارة الصحة", desc: "اللوحة الوطنية", icon: Building2, to: "/ministry" },
+  { id: "community", name: "صحة المجتمع", desc: "زيارات وحملات", icon: HeartHandshake, to: "/community" },
+  { id: "physio", name: "العلاج الطبيعي", desc: "جلسات التأهيل", icon: Dumbbell, to: "/physio" },
 ];
 
 type Method = { id: string; name: string; icon: React.ComponentType<{ className?: string }> };
@@ -123,7 +126,7 @@ function LoginPortal() {
             {/* Role grid */}
             <div className="mb-6">
               <Label>الدور</Label>
-              <div className="mt-2 grid grid-cols-4 gap-2">
+              <div className="mt-2 grid grid-cols-5 gap-2">
                 {ROLES.map((r) => {
                   const Icon = r.icon;
                   const active = role === r.id;
@@ -188,10 +191,13 @@ function LoginPortal() {
               <MethodPrompt method={method} />
             </div>
 
-            <button className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-[14px] font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:bg-primary-hover">
+            <Link
+              to={selectedRole.to}
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-[14px] font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:bg-primary-hover"
+            >
               متابعة
               <ArrowLeft className="h-4 w-4" />
-            </button>
+            </Link>
 
             <div className="mt-5 flex items-center justify-between text-[11px]">
               <button className="text-muted-foreground hover:text-foreground">نسيت رقمك الصحي؟</button>

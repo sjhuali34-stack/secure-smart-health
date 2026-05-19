@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   User, Stethoscope, Pill, HeartPulse, FlaskConical, ScanLine,
   Activity, Building2, ShieldCheck, Fingerprint, ScanFace, KeyRound,
-  CreditCard, ArrowLeft, Globe, Lock,
+  CreditCard, ArrowLeft, Globe, Lock, HeartHandshake, Dumbbell,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({

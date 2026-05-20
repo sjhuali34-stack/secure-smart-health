@@ -32,6 +32,8 @@ function EmergencyDashboard() {
       tabs={TABS}
       active={tab}
       onTab={setTab}
+      roleId="emergency"
+      reportKind="تقرير طوارئ"
     >
       {tab === "triage" && (
         <>

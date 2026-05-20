@@ -34,6 +34,8 @@ function NurseDashboard() {
       tabs={TABS}
       active={tab}
       onTab={setTab}
+      roleId="nurse"
+      reportKind="تقرير تمريض"
     >
       {tab === "overview" && (
         <div className="grid gap-4 md:grid-cols-4">

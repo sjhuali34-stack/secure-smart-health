@@ -32,6 +32,8 @@ function PharmacistDashboard() {
       tabs={TABS}
       active={tab}
       onTab={setTab}
+      roleId="pharmacist"
+      reportKind="تقرير صرف"
     >
       {tab === "overview" && (
         <div className="grid gap-4 md:grid-cols-4">

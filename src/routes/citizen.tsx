@@ -1,11 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   Activity, FileText, FlaskConical, ScanLine, Pill, Send, Download,
   Calendar, Bell, ShieldCheck, ChevronLeft, Search, Heart, Droplet,
   AlertTriangle, Syringe, Users, Eye, Clock, ArrowUpRight, Plus,
-  Stethoscope, FileDown, CheckCircle2,
+  Stethoscope, FileDown, CheckCircle2, LogOut,
 } from "lucide-react";
+import { store, useStore, downloadHealthRecord } from "@/lib/app-store";
+import { BookAppointmentDialog, NewReferralDialog, NotificationsBell } from "@/components/app-dialogs";
 
 export const Route = createFileRoute("/citizen")({
   component: CitizenDashboard,
@@ -31,13 +34,24 @@ const TABS: { id: TabId; label: string; icon: React.ComponentType<{ className?: 
 
 function CitizenDashboard() {
   const [tab, setTab] = useState<TabId>("overview");
+  const [bookOpen, setBookOpen] = useState(false);
+  const [refOpen, setRefOpen] = useState(false);
+  const session = useStore((s) => s.session);
+  const appointments = useStore((s) => s.appointments);
+  const referrals = useStore((s) => s.referrals);
+  const me = { name: session?.name ?? "أحمد محمد", id: session?.healthId ?? "12-4567-8901-23" };
+
+  const download = () => {
+    downloadHealthRecord(me.name, me.id);
+    toast.success("تم تجهيز نسخة من السجل");
+  };
 
   return (
     <div className="ambient-bg min-h-screen" dir="rtl">
-      <TopBar />
+      <TopBar onDownload={download} />
 
       <div className="mx-auto max-w-7xl px-5 pb-20 pt-6 lg:px-8">
-        <Greeting />
+        <Greeting onBook={() => setBookOpen(true)} onDownload={download} />
 
         {/* Tab Pills */}
         <div className="mt-7 -mx-1 overflow-x-auto">
@@ -64,22 +78,32 @@ function CitizenDashboard() {
         </div>
 
         <div className="mt-7">
-          {tab === "overview" && <Overview />}
+          {tab === "overview" && <Overview onBook={() => setBookOpen(true)} onReferral={() => setRefOpen(true)} onDownload={download} appointments={appointments} referrals={referrals} />}
           {tab === "labs" && <Labs />}
           {tab === "imaging" && <Imaging />}
           {tab === "prescriptions" && <Prescriptions />}
-          {tab === "referrals" && <Referrals />}
+          {tab === "referrals" && <Referrals onNew={() => setRefOpen(true)} />}
           {tab === "vaccines" && <Vaccines />}
           {tab === "security" && <Security />}
         </div>
       </div>
+
+      <BookAppointmentDialog open={bookOpen} onClose={() => setBookOpen(false)} patient={me} />
+      <NewReferralDialog open={refOpen} onClose={() => setRefOpen(false)} patient={me} />
     </div>
   );
 }
 
 /* =================== Top Bar =================== */
 
-function TopBar() {
+function TopBar({ onDownload }: { onDownload: () => void }) {
+  const navigate = useNavigate();
+  const session = useStore((s) => s.session);
+  const logout = () => {
+    store.logout();
+    toast.success("تم تسجيل الخروج");
+    navigate({ to: "/" });
+  };
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-surface/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-3.5 lg:px-8">
@@ -105,28 +129,29 @@ function TopBar() {
         </div>
 
         <div className="flex items-center gap-1.5">
-          <button className="relative grid h-9 w-9 place-items-center rounded-xl border border-border bg-surface hover:bg-muted">
-            <Bell className="h-4 w-4 text-foreground" />
-            <span className="absolute -top-0.5 -left-0.5 grid h-4 w-4 place-items-center rounded-full bg-destructive text-[9px] font-semibold text-destructive-foreground">3</span>
+          <button onClick={onDownload} className="hidden items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-[12px] text-foreground hover:bg-muted md:inline-flex">
+            <FileDown className="h-3.5 w-3.5" /> تحميل
           </button>
-          <Link to="/" className="hidden items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-[12px] text-foreground hover:bg-muted md:inline-flex">
-            خروج
-          </Link>
-          <Avatar />
+          <NotificationsBell role="citizen" />
+          <button onClick={logout} className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-[12px] text-foreground hover:bg-muted">
+            <LogOut className="h-3.5 w-3.5" /> خروج
+          </button>
+          <Avatar name={session?.name} />
         </div>
       </div>
     </header>
   );
 }
 
-function Avatar() {
+function Avatar({ name }: { name?: string }) {
+  const display = name ?? "أحمد محمد";
   return (
     <div className="flex items-center gap-2.5">
       <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-primary to-primary-hover text-[12px] font-semibold text-primary-foreground">
-        أم
+        {display.slice(0, 1)}
       </div>
       <div className="hidden leading-tight md:block">
-        <div className="text-[12px] font-medium text-foreground">أحمد محمد</div>
+        <div className="text-[12px] font-medium text-foreground">{display}</div>
         <div className="text-[10px] text-muted-foreground">١٢-٤٥٦٧-٨٩٠١-٢٣</div>
       </div>
     </div>

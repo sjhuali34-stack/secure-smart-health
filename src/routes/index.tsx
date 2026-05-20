@@ -1,10 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   User, Stethoscope, Pill, HeartPulse, FlaskConical, ScanLine,
   Activity, Building2, ShieldCheck, Fingerprint, ScanFace, KeyRound,
   CreditCard, ArrowLeft, Globe, Lock, HeartHandshake, Dumbbell,
 } from "lucide-react";
+import { store, type RoleId } from "@/lib/app-store";
+import { RegisterCitizenDialog } from "@/components/app-dialogs";
 
 export const Route = createFileRoute("/")({
   component: LoginPortal,
@@ -49,8 +52,22 @@ const METHODS: Method[] = [
 function LoginPortal() {
   const [role, setRole] = useState<string>("citizen");
   const [method, setMethod] = useState<string>("nfc");
+  const [healthId, setHealthId] = useState("");
+  const [register, setRegister] = useState(false);
+  const navigate = useNavigate();
   const selectedRole = ROLES.find((r) => r.id === role)!;
   const isProfessional = !["citizen", "emergency"].includes(role);
+
+  const submitLogin = () => {
+    const name = role === "citizen" ? "أحمد محمد" : role === "doctor" ? "د. سارة العبيدي" : "مستخدم النظام";
+    store.login({
+      role: selectedRole.id as RoleId,
+      name,
+      healthId: healthId || "12-4567-8901-23",
+    });
+    toast.success(`مرحبًا ${name}`);
+    navigate({ to: selectedRole.to });
+  };
 
   return (
     <div className="ambient-bg relative min-h-screen overflow-hidden" dir="rtl">
@@ -176,11 +193,12 @@ function LoginPortal() {
               </div>
             </div>
 
-            {/* Form */}
             <div className="space-y-3">
               <Field
                 label="الرقم الصحي الوطني"
                 placeholder="١٢ - XXXX - XXXX - XX"
+                value={healthId}
+                onChange={setHealthId}
               />
               {isProfessional && (
                 <Field
@@ -191,17 +209,17 @@ function LoginPortal() {
               <MethodPrompt method={method} />
             </div>
 
-            <Link
-              to={selectedRole.to}
+            <button
+              onClick={submitLogin}
               className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-[14px] font-medium text-primary-foreground shadow-[var(--shadow-soft)] transition hover:bg-primary-hover"
             >
               متابعة
               <ArrowLeft className="h-4 w-4" />
-            </Link>
+            </button>
 
             <div className="mt-5 flex items-center justify-between text-[11px]">
               <button className="text-muted-foreground hover:text-foreground">نسيت رقمك الصحي؟</button>
-              <button className="text-primary hover:underline">تسجيل جديد للمواطنين</button>
+              <button onClick={() => setRegister(true)} className="text-primary hover:underline">تسجيل جديد للمواطنين</button>
             </div>
 
             <div className="mt-6 flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-[11px] text-muted-foreground">
@@ -211,7 +229,10 @@ function LoginPortal() {
           </div>
 
           {/* Emergency strip */}
-          <button className="mt-4 flex w-full items-center justify-between rounded-2xl border border-destructive/30 bg-destructive/5 px-5 py-3.5 text-right transition hover:bg-destructive/10">
+          <button
+            onClick={() => navigate({ to: "/emergency" })}
+            className="mt-4 flex w-full items-center justify-between rounded-2xl border border-destructive/30 bg-destructive/5 px-5 py-3.5 text-right transition hover:bg-destructive/10"
+          >
             <div>
               <div className="text-[13px] font-semibold text-destructive">وضع الطوارئ الإسعافي</div>
               <div className="text-[11px] text-muted-foreground">عرض البيانات الحيوية فقط — دون كلمة مرور</div>
@@ -231,6 +252,8 @@ function LoginPortal() {
           </div>
         </div>
       </footer>
+
+      <RegisterCitizenDialog open={register} onClose={() => setRegister(false)} />
     </div>
   );
 }
@@ -252,13 +275,15 @@ function Label({ children }: { children: React.ReactNode }) {
   return <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{children}</div>;
 }
 
-function Field({ label, placeholder }: { label: string; placeholder: string }) {
+function Field({ label, placeholder, value, onChange }: { label: string; placeholder: string; value?: string; onChange?: (v: string) => void }) {
   return (
     <label className="block">
       <Label>{label}</Label>
       <input
         className="mt-1.5 w-full rounded-xl border border-border bg-background px-4 py-3 text-[14px] text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
         placeholder={placeholder}
+        value={value ?? ""}
+        onChange={(e) => onChange?.(e.target.value)}
         dir="ltr"
       />
     </label>

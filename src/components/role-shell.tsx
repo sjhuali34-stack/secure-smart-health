@@ -1,6 +1,9 @@
-import { Link } from "@tanstack/react-router";
-import { Bell, Search, LogOut, type LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Search, LogOut, Upload, type LucideIcon } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { toast } from "sonner";
+import { NotificationsBell, UploadReportDialog } from "@/components/app-dialogs";
+import { store, type RoleId } from "@/lib/app-store";
 
 export function RoleShell({
   icon: Icon,
@@ -9,6 +12,8 @@ export function RoleShell({
   tabs,
   active,
   onTab,
+  roleId,
+  reportKind,
   children,
 }: {
   icon: LucideIcon;
@@ -17,8 +22,19 @@ export function RoleShell({
   tabs: { id: string; label: string; icon: LucideIcon }[];
   active: string;
   onTab: (id: string) => void;
+  roleId: RoleId;
+  reportKind: string;
   children: ReactNode;
 }) {
+  const navigate = useNavigate();
+  const [uploadOpen, setUploadOpen] = useState(false);
+
+  const logout = () => {
+    store.logout();
+    toast.success("تم تسجيل الخروج");
+    navigate({ to: "/" });
+  };
+
   return (
     <div className="ambient-bg min-h-screen" dir="rtl">
       <header className="sticky top-0 z-20 border-b border-border bg-surface/80 backdrop-blur-xl">
@@ -42,15 +58,19 @@ export function RoleShell({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button className="grid h-9 w-9 place-items-center rounded-full border border-border bg-surface hover:border-border-strong">
-              <Bell className="h-4 w-4" />
+            <button
+              onClick={() => setUploadOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs hover:border-border-strong"
+            >
+              <Upload className="h-3.5 w-3.5" /> رفع تقرير
             </button>
-            <Link
-              to="/"
+            <NotificationsBell role={roleId} />
+            <button
+              onClick={logout}
               className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs hover:border-border-strong"
             >
               <LogOut className="h-3.5 w-3.5" /> خروج
-            </Link>
+            </button>
           </div>
         </div>
       </header>
@@ -85,6 +105,8 @@ export function RoleShell({
 
         <main>{children}</main>
       </div>
+
+      <UploadReportDialog open={uploadOpen} onClose={() => setUploadOpen(false)} role={roleId} defaultKind={reportKind} />
     </div>
   );
 }

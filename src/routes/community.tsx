@@ -33,6 +33,8 @@ function CommunityDashboard() {
       tabs={TABS}
       active={tab}
       onTab={setTab}
+      roleId="community"
+      reportKind="تقرير ميداني"
     >
       {tab === "overview" && (
         <div className="grid gap-4 md:grid-cols-4">

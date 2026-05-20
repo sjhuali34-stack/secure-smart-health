@@ -33,6 +33,8 @@ function PhysioDashboard() {
       tabs={TABS}
       active={tab}
       onTab={setTab}
+      roleId="physio"
+      reportKind="تقرير جلسة تأهيل"
     >
       {tab === "overview" && (
         <div className="grid gap-4 md:grid-cols-4">

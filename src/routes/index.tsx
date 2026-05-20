@@ -252,8 +252,6 @@ function LoginPortal() {
           </div>
         </div>
       </footer>
-    </div>
-  );
 
       <RegisterCitizenDialog open={register} onClose={() => setRegister(false)} />
     </div>

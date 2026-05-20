@@ -275,13 +275,15 @@ function Label({ children }: { children: React.ReactNode }) {
   return <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{children}</div>;
 }
 
-function Field({ label, placeholder }: { label: string; placeholder: string }) {
+function Field({ label, placeholder, value, onChange }: { label: string; placeholder: string; value?: string; onChange?: (v: string) => void }) {
   return (
     <label className="block">
       <Label>{label}</Label>
       <input
         className="mt-1.5 w-full rounded-xl border border-border bg-background px-4 py-3 text-[14px] text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
         placeholder={placeholder}
+        value={value ?? ""}
+        onChange={(e) => onChange?.(e.target.value)}
         dir="ltr"
       />
     </label>

@@ -32,6 +32,8 @@ function LabDashboard() {
       tabs={TABS}
       active={tab}
       onTab={setTab}
+      roleId="lab"
+      reportKind="نتيجة مختبر"
     >
       {tab === "overview" && (
         <div className="grid gap-4 md:grid-cols-4">

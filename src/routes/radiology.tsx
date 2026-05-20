@@ -32,6 +32,8 @@ function RadiologyDashboard() {
       tabs={TABS}
       active={tab}
       onTab={setTab}
+      roleId="radiology"
+      reportKind="تقرير أشعة"
     >
       {tab === "overview" && (
         <div className="grid gap-4 md:grid-cols-4">

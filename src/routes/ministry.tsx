@@ -32,6 +32,8 @@ function MinistryDashboard() {
       tabs={TABS}
       active={tab}
       onTab={setTab}
+      roleId="ministry"
+      reportKind="تقرير وزاري"
     >
       {tab === "national" && (
         <>

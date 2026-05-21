@@ -160,7 +160,9 @@ function Avatar({ name }: { name?: string }) {
 
 /* =================== Greeting + Vitals =================== */
 
-function Greeting() {
+function Greeting({ onBook, onDownload }: { onBook: () => void; onDownload: () => void }) {
+  const session = useStore((s) => s.session);
+  const name = session?.name?.split(" ")[0] ?? "أحمد";
   return (
     <section className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
       <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-surface to-accent/40 p-6 md:p-8">
@@ -169,17 +171,17 @@ function Greeting() {
           <span className="h-1.5 w-1.5 rounded-full bg-success" /> متصل · مزامنة فورية
         </span>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-          مساء الخير، أحمد
+          مساء الخير، {name}
         </h1>
         <p className="mt-2 max-w-md text-[14px] text-muted-foreground">
           سجلّك الصحي محدّث. لديك <span className="text-foreground font-medium">٣ تنبيهات ذكية</span> ووصفة فعّالة واحدة.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-2.5">
-          <button className="inline-flex items-center gap-2 rounded-xl bg-foreground px-4 py-2.5 text-[13px] font-medium text-background hover:opacity-90">
+          <button onClick={onBook} className="inline-flex items-center gap-2 rounded-xl bg-foreground px-4 py-2.5 text-[13px] font-medium text-background hover:opacity-90">
             <Calendar className="h-4 w-4" /> حجز موعد
           </button>
-          <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-[13px] font-medium text-foreground hover:bg-muted">
+          <button onClick={onDownload} className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-[13px] font-medium text-foreground hover:bg-muted">
             <FileDown className="h-4 w-4" /> تحميل نسخة من السجل
           </button>
         </div>
@@ -232,7 +234,13 @@ function Vital({
 
 /* =================== Overview =================== */
 
-function Overview() {
+function Overview({
+  onBook, onReferral, onDownload, appointments, referrals,
+}: {
+  onBook: () => void; onReferral: () => void; onDownload: () => void;
+  appointments: Array<{ id: string; doctor: string; spec: string; facility: string; reason: string; date: string }>;
+  referrals: Array<{ id: string; to: string; reason: string; urgency: string }>;
+}) {
   return (
     <div className="grid gap-5 lg:grid-cols-3">
       <div className="space-y-5 lg:col-span-2">
@@ -243,6 +251,44 @@ function Overview() {
             <Alert tone="success" title="تحليل سكر تراكمي ضمن الطبيعي" desc="HbA1c = 5.4٪ — استمر على نمط حياتك الحالي." />
           </div>
         </Panel>
+
+        {appointments.length > 0 && (
+          <Panel title="مواعيدك القادمة">
+            <div className="space-y-2">
+              {appointments.slice(0, 3).map((a) => (
+                <div key={a.id} className="flex items-center gap-3 rounded-xl border border-border bg-background p-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-primary">
+                    <Calendar className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-medium text-foreground truncate">{a.doctor} — {a.spec}</div>
+                    <div className="text-[11px] text-muted-foreground truncate">{a.facility} · {a.reason}</div>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground">{new Date(a.date).toLocaleString("ar")}</span>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        )}
+
+        {referrals.length > 0 && (
+          <Panel title="إحالاتك الأخيرة">
+            <div className="space-y-2">
+              {referrals.slice(0, 3).map((r) => (
+                <div key={r.id} className="flex items-center gap-3 rounded-xl border border-border bg-background p-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-primary">
+                    <Send className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-medium text-foreground truncate">{r.to}</div>
+                    <div className="text-[11px] text-muted-foreground truncate">{r.reason}</div>
+                  </div>
+                  <span className="rounded-full bg-accent px-2 py-1 text-[10px] text-primary">{r.urgency}</span>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        )}
 
         <Panel title="الزيارات الأخيرة" action="عرض الكل">
           <div className="divide-y divide-border">
@@ -291,9 +337,9 @@ function Overview() {
 
         <Panel title="إجراءات سريعة">
           <div className="grid grid-cols-2 gap-2">
-            <Quick icon={Download} label="نسخة PDF" />
-            <Quick icon={Calendar} label="حجز موعد" />
-            <Quick icon={Send} label="إحالة جديدة" />
+            <Quick icon={Download} label="نسخة PDF" onClick={onDownload} />
+            <Quick icon={Calendar} label="حجز موعد" onClick={onBook} />
+            <Quick icon={Send} label="إحالة جديدة" onClick={onReferral} />
             <Quick icon={ShieldCheck} label="سجل الأمان" />
           </div>
         </Panel>
@@ -321,9 +367,9 @@ function Alert({ tone, title, desc }: { tone: "primary" | "warning" | "success";
   );
 }
 
-function Quick({ icon: Icon, label }: { icon: React.ComponentType<{ className?: string }>; label: string }) {
+function Quick({ icon: Icon, label, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; onClick?: () => void }) {
   return (
-    <button className="flex flex-col items-start gap-2 rounded-xl border border-border bg-background p-3 text-right transition hover:border-border-strong hover:bg-muted">
+    <button onClick={onClick} className="flex flex-col items-start gap-2 rounded-xl border border-border bg-background p-3 text-right transition hover:border-border-strong hover:bg-muted">
       <Icon className="h-4 w-4 text-primary" />
       <span className="text-[12px] font-medium text-foreground">{label}</span>
     </button>
@@ -454,13 +500,19 @@ function PrescriptionCard({
   );
 }
 
-function Referrals() {
+function Referrals({ onNew }: { onNew: () => void }) {
+  const referrals = useStore((s) => s.referrals);
   return (
     <Panel title="الإحالات" action="إحالة جديدة">
       <div className="space-y-2.5">
+        <button onClick={onNew} className="inline-flex items-center gap-1.5 rounded-xl border border-dashed border-border bg-background px-3 py-2 text-[12px] text-foreground hover:border-primary hover:bg-accent/40">
+          <Plus className="h-3.5 w-3.5 text-primary" /> إنشاء إحالة جديدة
+        </button>
+        {referrals.map((r) => (
+          <ListRow key={r.id} icon={Send} title={`إلى: ${r.to}`} sub={`${r.from} · ${r.reason}`} meta={new Date(r.at).toLocaleDateString("ar")} status={{ label: r.status === "pending" ? "قيد الانتظار" : "مكتملة", tone: r.status === "pending" ? "warning" : "success" }} />
+        ))}
         <ListRow icon={Send} title="إحالة إلى استشاري القلب" sub="من د. سارة العبيدي → د. محمد الزبيدي · مستعجلة" meta="اليوم" status={{ label: "قيد الانتظار", tone: "warning" }} />
         <ListRow icon={Send} title="إحالة لطب الأسنان" sub="فحص دوري" meta="قبل أسبوع" status={{ label: "مكتملة", tone: "success" }} />
-        <ListRow icon={Send} title="إحالة لطب العيون" sub="فحص نظر سنوي" meta="قبل شهر" status={{ label: "مكتملة", tone: "success" }} />
       </div>
     </Panel>
   );

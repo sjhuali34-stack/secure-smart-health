@@ -2,8 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   HeartHandshake, Home, Syringe, Users, ClipboardList, MapPin, BarChart3,
+  FileText, FlaskConical, ScanLine, Pill, Send, ShieldCheck, Download,
 } from "lucide-react";
+import { toast } from "sonner";
 import { RoleShell, Card, Stat, Row } from "@/components/role-shell";
+import { downloadHealthRecord } from "@/lib/app-store";
 
 export const Route = createFileRoute("/community")({
   component: CommunityDashboard,
@@ -20,6 +23,7 @@ const TABS = [
   { id: "visits", label: "الزيارات المنزلية", icon: Home },
   { id: "campaigns", label: "الحملات", icon: Syringe },
   { id: "families", label: "العائلات", icon: Users },
+  { id: "record", label: "السجل الصحي الكامل", icon: FileText },
   { id: "reports", label: "التقارير الميدانية", icon: ClipboardList },
 ];
 

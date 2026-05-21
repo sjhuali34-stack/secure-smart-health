@@ -1,10 +1,17 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
-  Stethoscope, Search, Bell, Users, FileText, Pill, Send, FlaskConical,
+  Stethoscope, Search, Users, FileText, Pill, Send, FlaskConical,
   ScanLine, Plus, X, AlertTriangle, CheckCircle2, Clock, Calendar,
   ChevronLeft, Activity, Heart, Sparkles, ArrowLeft, Trash2, Save,
+  LogOut, UserPlus,
 } from "lucide-react";
+import { store, useStore } from "@/lib/app-store";
+import {
+  NotificationsBell, BookAppointmentDialog, NewReferralDialog,
+  RegisterCitizenDialog, UploadReportDialog,
+} from "@/components/app-dialogs";
 
 export const Route = createFileRoute("/doctor")({
   component: DoctorDashboard,
@@ -18,25 +25,39 @@ export const Route = createFileRoute("/doctor")({
 
 type View = "queue" | "patient" | "prescribe";
 
+const PATIENT = { name: "أحمد محمد", id: "12-4567-8901-23" };
+
 function DoctorDashboard() {
   const [view, setView] = useState<View>("queue");
+  const [bookOpen, setBookOpen] = useState(false);
+  const [refOpen, setRefOpen] = useState(false);
+  const [regOpen, setRegOpen] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   return (
     <div className="ambient-bg min-h-screen" dir="rtl">
       <TopBar />
       <div className="mx-auto grid max-w-7xl gap-6 px-5 py-6 lg:grid-cols-[260px_1fr] lg:px-8">
-        <Sidebar />
+        <Sidebar onRegister={() => setRegOpen(true)} onUpload={() => setUploadOpen(true)} />
         <main>
-          {view === "queue" && <Queue onOpen={() => setView("patient")} />}
+          {view === "queue" && <Queue onOpen={() => setView("patient")} onRegister={() => setRegOpen(true)} />}
           {view === "patient" && (
             <PatientChart
               onBack={() => setView("queue")}
               onPrescribe={() => setView("prescribe")}
+              onBook={() => setBookOpen(true)}
+              onReferral={() => setRefOpen(true)}
+              onUpload={() => setUploadOpen(true)}
             />
           )}
           {view === "prescribe" && <Prescribe onBack={() => setView("patient")} />}
         </main>
       </div>
+
+      <BookAppointmentDialog open={bookOpen} onClose={() => setBookOpen(false)} patient={PATIENT} />
+      <NewReferralDialog open={refOpen} onClose={() => setRefOpen(false)} patient={PATIENT} />
+      <RegisterCitizenDialog open={regOpen} onClose={() => setRegOpen(false)} />
+      <UploadReportDialog open={uploadOpen} onClose={() => setUploadOpen(false)} role="doctor" defaultKind="تقرير طبي" />
     </div>
   );
 }

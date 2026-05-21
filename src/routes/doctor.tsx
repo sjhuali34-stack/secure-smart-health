@@ -253,7 +253,7 @@ function Stat({
 
 /* =================== Patient Chart =================== */
 
-function PatientChart({ onBack, onPrescribe }: { onBack: () => void; onPrescribe: () => void }) {
+function PatientChart({ onBack, onPrescribe, onBook, onReferral, onUpload }: { onBack: () => void; onPrescribe: () => void; onBook: () => void; onReferral: () => void; onUpload: () => void }) {
   const [reason, setReason] = useState("مراجعة");
   const [diagnosis, setDiagnosis] = useState("");
   const [plan, setPlan] = useState("");
@@ -354,10 +354,11 @@ function PatientChart({ onBack, onPrescribe }: { onBack: () => void; onPrescribe
               placeholder="الخطة العلاجية، الإرشادات، المتابعة المطلوبة…"
               className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-[13px] text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              <ActionTile icon={FlaskConical} label="طلب تحاليل" />
-              <ActionTile icon={ScanLine} label="طلب أشعة" />
-              <ActionTile icon={Send} label="إنشاء إحالة" />
+            <div className="mt-3 grid gap-2 sm:grid-cols-4">
+              <ActionTile icon={FlaskConical} label="طلب تحاليل" onClick={onUpload} />
+              <ActionTile icon={ScanLine} label="طلب أشعة" onClick={onUpload} />
+              <ActionTile icon={Send} label="إنشاء إحالة" onClick={onReferral} />
+              <ActionTile icon={Calendar} label="حجز موعد" onClick={onBook} />
             </div>
           </Card>
 
@@ -477,9 +478,9 @@ function Card({
   );
 }
 
-function ActionTile({ icon: Icon, label }: { icon: React.ComponentType<{ className?: string }>; label: string }) {
+function ActionTile({ icon: Icon, label, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; onClick?: () => void }) {
   return (
-    <button className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-[12px] text-foreground transition hover:border-border-strong hover:bg-muted">
+    <button onClick={onClick} className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-[12px] text-foreground transition hover:border-border-strong hover:bg-muted">
       <Icon className="h-3.5 w-3.5 text-primary" />
       {label}
     </button>

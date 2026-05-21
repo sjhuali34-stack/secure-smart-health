@@ -1,10 +1,17 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
-  Stethoscope, Search, Bell, Users, FileText, Pill, Send, FlaskConical,
+  Stethoscope, Search, Users, FileText, Pill, Send, FlaskConical,
   ScanLine, Plus, X, AlertTriangle, CheckCircle2, Clock, Calendar,
   ChevronLeft, Activity, Heart, Sparkles, ArrowLeft, Trash2, Save,
+  LogOut, UserPlus,
 } from "lucide-react";
+import { store, useStore } from "@/lib/app-store";
+import {
+  NotificationsBell, BookAppointmentDialog, NewReferralDialog,
+  RegisterCitizenDialog, UploadReportDialog,
+} from "@/components/app-dialogs";
 
 export const Route = createFileRoute("/doctor")({
   component: DoctorDashboard,
@@ -18,25 +25,39 @@ export const Route = createFileRoute("/doctor")({
 
 type View = "queue" | "patient" | "prescribe";
 
+const PATIENT = { name: "أحمد محمد", id: "12-4567-8901-23" };
+
 function DoctorDashboard() {
   const [view, setView] = useState<View>("queue");
+  const [bookOpen, setBookOpen] = useState(false);
+  const [refOpen, setRefOpen] = useState(false);
+  const [regOpen, setRegOpen] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   return (
     <div className="ambient-bg min-h-screen" dir="rtl">
       <TopBar />
       <div className="mx-auto grid max-w-7xl gap-6 px-5 py-6 lg:grid-cols-[260px_1fr] lg:px-8">
-        <Sidebar />
+        <Sidebar onRegister={() => setRegOpen(true)} onUpload={() => setUploadOpen(true)} />
         <main>
-          {view === "queue" && <Queue onOpen={() => setView("patient")} />}
+          {view === "queue" && <Queue onOpen={() => setView("patient")} onRegister={() => setRegOpen(true)} />}
           {view === "patient" && (
             <PatientChart
               onBack={() => setView("queue")}
               onPrescribe={() => setView("prescribe")}
+              onBook={() => setBookOpen(true)}
+              onReferral={() => setRefOpen(true)}
+              onUpload={() => setUploadOpen(true)}
             />
           )}
           {view === "prescribe" && <Prescribe onBack={() => setView("patient")} />}
         </main>
       </div>
+
+      <BookAppointmentDialog open={bookOpen} onClose={() => setBookOpen(false)} patient={PATIENT} />
+      <NewReferralDialog open={refOpen} onClose={() => setRefOpen(false)} patient={PATIENT} />
+      <RegisterCitizenDialog open={regOpen} onClose={() => setRegOpen(false)} />
+      <UploadReportDialog open={uploadOpen} onClose={() => setUploadOpen(false)} role="doctor" defaultKind="تقرير طبي" />
     </div>
   );
 }
@@ -44,6 +65,10 @@ function DoctorDashboard() {
 /* =================== Shell =================== */
 
 function TopBar() {
+  const navigate = useNavigate();
+  const session = useStore((s) => s.session);
+  const name = session?.name ?? "د. سارة العبيدي";
+  const logout = () => { store.logout(); toast.success("تم تسجيل الخروج"); navigate({ to: "/" }); };
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-surface/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-3.5 lg:px-8">
@@ -69,15 +94,16 @@ function TopBar() {
         </div>
 
         <div className="flex items-center gap-1.5">
-          <button className="grid h-9 w-9 place-items-center rounded-xl border border-border bg-surface hover:bg-muted">
-            <Bell className="h-4 w-4 text-foreground" />
+          <NotificationsBell role="doctor" />
+          <button onClick={logout} className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-[12px] text-foreground hover:bg-muted">
+            <LogOut className="h-3.5 w-3.5" /> خروج
           </button>
           <div className="flex items-center gap-2.5">
             <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-primary to-primary-hover text-[12px] font-semibold text-primary-foreground">
-              س ع
+              {name.slice(0, 1)}
             </div>
             <div className="hidden leading-tight md:block">
-              <div className="text-[12px] font-medium text-foreground">د. سارة العبيدي</div>
+              <div className="text-[12px] font-medium text-foreground">{name}</div>
               <div className="text-[10px] text-muted-foreground">طب الأسرة · MED-4421</div>
             </div>
           </div>
@@ -87,7 +113,7 @@ function TopBar() {
   );
 }
 
-function Sidebar() {
+function Sidebar({ onRegister, onUpload }: { onRegister: () => void; onUpload: () => void }) {
   const items = [
     { icon: Users, label: "قائمة المرضى", count: "١٢", active: true },
     { icon: Calendar, label: "المواعيد", count: "٨" },
@@ -120,6 +146,14 @@ function Sidebar() {
             </button>
           );
         })}
+        <div className="mt-3 space-y-1.5">
+          <button onClick={onRegister} className="flex w-full items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-[12px] text-foreground hover:border-primary hover:bg-accent/40">
+            <UserPlus className="h-3.5 w-3.5 text-primary" /> تسجيل بطاقة جديدة
+          </button>
+          <button onClick={onUpload} className="flex w-full items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-[12px] text-foreground hover:border-primary hover:bg-accent/40">
+            <FileText className="h-3.5 w-3.5 text-primary" /> رفع تقرير طبي
+          </button>
+        </div>
         <div className="mt-3 rounded-2xl border border-border bg-accent/40 p-3">
           <div className="flex items-center gap-2 text-[11px] font-medium text-primary">
             <Sparkles className="h-3.5 w-3.5" /> اقتراح ذكي
@@ -135,7 +169,7 @@ function Sidebar() {
 
 /* =================== Queue =================== */
 
-function Queue({ onOpen }: { onOpen: () => void }) {
+function Queue({ onOpen, onRegister }: { onOpen: () => void; onRegister: () => void }) {
   const patients = [
     { name: "أحمد محمد", id: "١٢-٤٥٦٧-٨٩٠١-٢٣", age: 42, time: "٠٩:٠٠", reason: "مراجعة دورية", tone: "primary" as const, status: "في الانتظار" },
     { name: "فاطمة علي", id: "١٢-٣٣٢١-٧٧٨٨-١٤", age: 34, time: "٠٩:٢٠", reason: "ألم صدر", tone: "warning" as const, status: "عاجل" },
@@ -159,7 +193,7 @@ function Queue({ onOpen }: { onOpen: () => void }) {
             <h2 className="text-[15px] font-semibold text-foreground">قائمة المرضى — اليوم</h2>
             <p className="mt-0.5 text-[11px] text-muted-foreground">١٨ مايو ٢٠٢٦ · مستشفى بغداد التعليمي</p>
           </div>
-          <button className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-background px-3 py-2 text-[12px] text-foreground hover:bg-muted">
+          <button onClick={onRegister} className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-background px-3 py-2 text-[12px] text-foreground hover:bg-muted">
             <Plus className="h-3.5 w-3.5" /> إضافة مريض
           </button>
         </div>
@@ -219,7 +253,7 @@ function Stat({
 
 /* =================== Patient Chart =================== */
 
-function PatientChart({ onBack, onPrescribe }: { onBack: () => void; onPrescribe: () => void }) {
+function PatientChart({ onBack, onPrescribe, onBook, onReferral, onUpload }: { onBack: () => void; onPrescribe: () => void; onBook: () => void; onReferral: () => void; onUpload: () => void }) {
   const [reason, setReason] = useState("مراجعة");
   const [diagnosis, setDiagnosis] = useState("");
   const [plan, setPlan] = useState("");
@@ -320,10 +354,11 @@ function PatientChart({ onBack, onPrescribe }: { onBack: () => void; onPrescribe
               placeholder="الخطة العلاجية، الإرشادات، المتابعة المطلوبة…"
               className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-[13px] text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              <ActionTile icon={FlaskConical} label="طلب تحاليل" />
-              <ActionTile icon={ScanLine} label="طلب أشعة" />
-              <ActionTile icon={Send} label="إنشاء إحالة" />
+            <div className="mt-3 grid gap-2 sm:grid-cols-4">
+              <ActionTile icon={FlaskConical} label="طلب تحاليل" onClick={onUpload} />
+              <ActionTile icon={ScanLine} label="طلب أشعة" onClick={onUpload} />
+              <ActionTile icon={Send} label="إنشاء إحالة" onClick={onReferral} />
+              <ActionTile icon={Calendar} label="حجز موعد" onClick={onBook} />
             </div>
           </Card>
 
@@ -443,9 +478,9 @@ function Card({
   );
 }
 
-function ActionTile({ icon: Icon, label }: { icon: React.ComponentType<{ className?: string }>; label: string }) {
+function ActionTile({ icon: Icon, label, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; onClick?: () => void }) {
   return (
-    <button className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-[12px] text-foreground transition hover:border-border-strong hover:bg-muted">
+    <button onClick={onClick} className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-[12px] text-foreground transition hover:border-border-strong hover:bg-muted">
       <Icon className="h-3.5 w-3.5 text-primary" />
       {label}
     </button>

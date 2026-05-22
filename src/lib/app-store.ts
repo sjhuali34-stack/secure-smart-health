@@ -172,11 +172,8 @@ function pushNotification(n: Omit<Notification, "id" | "at">) {
 }
 
 export function useStore<T>(selector: (s: State) => T): T {
-  return useSyncExternalStore(
-    store.subscribe,
-    () => selector(store.get()),
-    () => selector(initial),
-  );
+  const snapshot = useSyncExternalStore(store.subscribe, store.get, () => initial);
+  return selector(snapshot);
 }
 
 // Trigger a PDF-ish download (HTML wrapper -> .pdf-like blob).

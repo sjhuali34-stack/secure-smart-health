@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Building2, BarChart3, Map, Activity, Syringe, ShieldAlert, TrendingUp, Users,
+  Building2, BarChart3, Map, Activity, Syringe, ShieldAlert, TrendingUp, Users, Megaphone, Send, Bell,
 } from "lucide-react";
 import { RoleShell, Card, Stat, Row } from "@/components/role-shell";
+import { BroadcastAlertDialog } from "@/components/app-dialogs";
+import { useStore } from "@/lib/app-store";
 
 export const Route = createFileRoute("/ministry")({
   component: MinistryDashboard,
@@ -20,10 +22,16 @@ const TABS = [
   { id: "epidemic", label: "الترصد الوبائي", icon: ShieldAlert },
   { id: "vaccines", label: "التطعيمات", icon: Syringe },
   { id: "facilities", label: "المنشآت", icon: Building2 },
+  { id: "alerts", label: "التنبيهات الوطنية", icon: Megaphone },
 ];
 
 function MinistryDashboard() {
   const [tab, setTab] = useState("national");
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const broadcasts = useStore((s) =>
+    s.notifications.filter((n) => n.id.startsWith("BRD-")).slice(0, 20)
+  );
+
   return (
     <RoleShell
       icon={Building2}
@@ -35,6 +43,20 @@ function MinistryDashboard() {
       roleId="ministry"
       reportKind="تقرير وزاري"
     >
+      {/* Sticky action bar */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border bg-surface/80 p-3 backdrop-blur">
+        <div className="flex items-center gap-2 text-[12px] text-muted-foreground">
+          <Megaphone className="h-4 w-4 text-primary" />
+          قناة الإخطارات الرسمية للوزارة — للمؤسسات الصحية والمواطنين
+        </div>
+        <button
+          onClick={() => setBroadcastOpen(true)}
+          className="inline-flex items-center gap-2 rounded-xl bg-foreground px-4 py-2 text-[12.5px] font-medium text-background hover:opacity-90"
+        >
+          <Send className="h-3.5 w-3.5" /> إرسال تنبيه وطني
+        </button>
+      </div>
+
       {tab === "national" && (
         <>
           <div className="mb-4 grid gap-4 md:grid-cols-4">
@@ -76,6 +98,51 @@ function MinistryDashboard() {
           </div>
         </Card>
       )}
+      {tab === "alerts" && (
+        <Card>
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <div className="text-sm font-semibold">سجل التنبيهات المرسلة</div>
+              <div className="text-[11px] text-muted-foreground">آخر {broadcasts.length} تنبيه صادر من الوزارة</div>
+            </div>
+            <button
+              onClick={() => setBroadcastOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-background px-3 py-1.5 text-[11.5px] font-medium text-foreground hover:bg-muted"
+            >
+              <Send className="h-3.5 w-3.5" /> تنبيه جديد
+            </button>
+          </div>
+          {broadcasts.length === 0 && (
+            <div className="rounded-xl border border-dashed border-border bg-background p-6 text-center text-[12px] text-muted-foreground">
+              لم يتم إرسال أي تنبيه بعد — اضغط "إرسال تنبيه وطني" لإصدار أول إخطار.
+            </div>
+          )}
+          <div className="space-y-2">
+            {broadcasts.map((n) => (
+              <div key={n.id} className="flex items-start gap-3 rounded-xl border border-border bg-background p-3">
+                <div className="grid h-9 w-9 place-items-center rounded-lg bg-accent text-primary">
+                  <Bell className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] font-medium text-foreground">{n.title}</div>
+                  <div className="mt-0.5 text-[11.5px] text-muted-foreground">{n.body}</div>
+                  <div className="mt-1 flex items-center gap-2 text-[10.5px] text-muted-foreground">
+                    <span className="rounded-full bg-muted px-2 py-0.5">إلى: {n.for === "all" ? "الجميع" : n.for}</span>
+                    <span>{new Date(n.at).toLocaleString("ar")}</span>
+                    <span className={`rounded-full px-2 py-0.5 ${
+                      n.tone === "danger" ? "bg-destructive/10 text-destructive" :
+                      n.tone === "warn" ? "bg-amber-500/10 text-amber-700 dark:text-amber-400" :
+                      n.tone === "success" ? "bg-success/10 text-success" : "bg-accent text-primary"
+                    }`}>{n.tone}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      <BroadcastAlertDialog open={broadcastOpen} onClose={() => setBroadcastOpen(false)} />
     </RoleShell>
   );
 }

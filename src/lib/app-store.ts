@@ -54,12 +54,21 @@ export type ReportFile = {
 };
 
 export type Citizen = {
-  id: string;          // national health id
+  id: string;
   name: string;
   dob: string;
   phone: string;
   bloodType?: string;
   at: number;
+};
+
+export type FamilyMember = {
+  id: string;
+  name: string;
+  relation: string;
+  age?: string;
+  healthId?: string;
+  note?: string;
 };
 
 export type Session = {
@@ -75,9 +84,10 @@ type State = {
   referrals: Referral[];
   reports: ReportFile[];
   citizens: Citizen[];
+  family: FamilyMember[];
 };
 
-const KEY = "ur-sehr-store-v1";
+const KEY = "ur-sehr-store-v2";
 const initial: State = {
   session: null,
   notifications: [
@@ -89,6 +99,11 @@ const initial: State = {
   referrals: [],
   reports: [],
   citizens: [],
+  family: [
+    { id: "F1", name: "فاطمة العلي", relation: "الزوجة", age: "٣٤ سنة", healthId: "12-4567-8901-24", note: "لا يوجد حساسية" },
+    { id: "F2", name: "يوسف أحمد", relation: "الابن", age: "٨ سنوات", healthId: "12-4567-8901-25", note: "لقاح قادم: ٢٠ نوفمبر" },
+    { id: "F3", name: "نور أحمد", relation: "الابنة", age: "٥ سنوات", healthId: "12-4567-8901-26" },
+  ],
 };
 
 function load(): State {
@@ -154,6 +169,31 @@ export const store = {
     set({ reports: [item, ...state.reports] });
     pushNotification({ title: "تم رفع تقرير", body: `${r.kind} · ${r.title}`, tone: "success", for: r.role });
     return item;
+  },
+
+  // family
+  addFamilyMember(m: Omit<FamilyMember, "id">) {
+    const item: FamilyMember = { ...m, id: `FAM-${Date.now()}` };
+    set({ family: [item, ...state.family] });
+    pushNotification({ title: "تمت إضافة فرد جديد للأسرة", body: `${m.name} — ${m.relation}`, tone: "success", for: "citizen" });
+    return item;
+  },
+  removeFamilyMember(id: string) {
+    set({ family: state.family.filter((f) => f.id !== id) });
+  },
+
+  // broadcast alerts (وزارة الصحة)
+  broadcastAlert(payload: {
+    title: string; body: string; tone?: Notification["tone"];
+    targets: Array<RoleId | "all">;
+  }) {
+    const tone = payload.tone ?? "info";
+    const targets = payload.targets.includes("all") ? (["all"] as Array<RoleId | "all">) : payload.targets;
+    const items: Notification[] = targets.map((t, i) => ({
+      id: `BRD-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 5)}`,
+      title: payload.title, body: payload.body, tone, at: Date.now(), for: t,
+    }));
+    set({ notifications: [...items, ...state.notifications].slice(0, 80) });
   },
 
   // notifications

@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { X, Upload, Bell, CheckCircle2, AlertTriangle, Info, FileText } from "lucide-react";
+import { X, Upload, Bell, CheckCircle2, AlertTriangle, Info, FileText, Users, Trash2, Plus, Send, Download, Megaphone } from "lucide-react";
 import { toast } from "sonner";
-import { store, useStore, type RoleId } from "@/lib/app-store";
+import { store, useStore, downloadHealthRecord, type RoleId } from "@/lib/app-store";
 
 /* ---------- Modal primitive ---------- */
 export function Modal({
@@ -301,5 +301,172 @@ export function StoreListEmpty({ icon: Icon = FileText, label }: { icon?: typeof
       <Icon className="h-4 w-4" />
       {label}
     </div>
+  );
+}
+
+/* ---------- Family Management ---------- */
+export function FamilyDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const family = useStore((s) => s.family);
+  const [name, setName] = useState("");
+  const [relation, setRelation] = useState("الابن");
+  const [age, setAge] = useState("");
+  const [healthId, setHealthId] = useState("");
+  const [note, setNote] = useState("");
+
+  const add = () => {
+    if (!name.trim()) { toast.error("اسم الفرد مطلوب"); return; }
+    store.addFamilyMember({ name, relation, age, healthId, note });
+    toast.success("تمت إضافة الفرد إلى الأسرة");
+    setName(""); setAge(""); setHealthId(""); setNote("");
+  };
+  const remove = (id: string, n: string) => {
+    store.removeFamilyMember(id);
+    toast.success(`تم حذف ${n}`);
+  };
+
+  return (
+    <Modal open={open} onClose={onClose} title="إدارة سجل الأسرة" wide
+      footer={<div className="flex justify-end gap-2"><GhostButton onClick={onClose}>إغلاق</GhostButton></div>}>
+      <div className="grid gap-5 md:grid-cols-[1.2fr_1fr]">
+        <div className="space-y-2">
+          <div className="text-[12px] font-semibold text-foreground">أفراد الأسرة المرتبطون ({family.length})</div>
+          {family.length === 0 && <StoreListEmpty icon={Users} label="لا يوجد أفراد بعد" />}
+          {family.map((m) => (
+            <div key={m.id} className="flex items-start gap-3 rounded-xl border border-border bg-background p-3">
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-accent text-primary font-semibold">{m.name.slice(0, 1)}</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] font-medium text-foreground truncate">{m.name}</span>
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">{m.relation}</span>
+                </div>
+                <div className="mt-0.5 text-[11px] text-muted-foreground truncate">{[m.age, m.healthId, m.note].filter(Boolean).join(" · ")}</div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  <button onClick={() => { downloadHealthRecord(m.name, m.healthId ?? "غير معروف"); toast.success("تم تجهيز السجل"); }}
+                    className="inline-flex items-center gap-1 rounded-lg border border-border bg-surface px-2 py-1 text-[10.5px] text-foreground hover:bg-muted">
+                    <Download className="h-3 w-3" /> السجل الصحي
+                  </button>
+                  <button onClick={() => remove(m.id, m.name)}
+                    className="inline-flex items-center gap-1 rounded-lg border border-destructive/30 bg-destructive/5 px-2 py-1 text-[10.5px] text-destructive hover:bg-destructive/10">
+                    <Trash2 className="h-3 w-3" /> حذف
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="space-y-3 rounded-2xl border border-dashed border-border bg-background/40 p-4">
+          <div className="flex items-center gap-2 text-[12px] font-semibold text-foreground">
+            <Plus className="h-3.5 w-3.5 text-primary" /> إضافة فرد جديد
+          </div>
+          <Field label="الاسم" value={name} onChange={setName} placeholder="الاسم الكامل" />
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="صلة القرابة" value={relation} onChange={setRelation} />
+            <Field label="العمر" value={age} onChange={setAge} placeholder="مثلاً: ٨ سنوات" />
+          </div>
+          <Field label="الرقم الصحي الوطني" value={healthId} onChange={setHealthId} placeholder="12-XXXX-XXXX-XX" />
+          <Field label="ملاحظات" value={note} onChange={setNote} placeholder="حساسية / لقاحات قادمة" />
+          <PrimaryButton onClick={add}><Plus className="h-3.5 w-3.5" /> إضافة للأسرة</PrimaryButton>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+/* ---------- Broadcast Alert (Ministry of Health) ---------- */
+const ALL_ROLES: { id: RoleId; label: string }[] = [
+  { id: "doctor", label: "الأطباء" },
+  { id: "nurse", label: "الممرضون" },
+  { id: "pharmacist", label: "الصيدليات" },
+  { id: "lab", label: "المختبرات" },
+  { id: "radiology", label: "الأشعة" },
+  { id: "emergency", label: "الطوارئ" },
+  { id: "community", label: "صحة المجتمع" },
+  { id: "physio", label: "العلاج الطبيعي" },
+];
+
+export function BroadcastAlertDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [tone, setTone] = useState<"info" | "success" | "warn" | "danger">("info");
+  const [mode, setMode] = useState<"all" | "citizens" | "institutions" | "custom">("all");
+  const [picked, setPicked] = useState<RoleId[]>([]);
+
+  const toggle = (r: RoleId) => setPicked((p) => p.includes(r) ? p.filter((x) => x !== r) : [...p, r]);
+
+  const send = () => {
+    if (!title.trim() || !body.trim()) { toast.error("عنوان ونص التنبيه مطلوبان"); return; }
+    let targets: Array<RoleId | "all"> = [];
+    if (mode === "all") targets = ["all"];
+    else if (mode === "citizens") targets = ["citizen"];
+    else if (mode === "institutions") targets = ALL_ROLES.map((r) => r.id);
+    else targets = picked.length ? picked : ["all"];
+    store.broadcastAlert({ title, body, tone, targets });
+    toast.success(`تم إرسال التنبيه (${targets.includes("all") ? "للجميع" : `${targets.length} جهة`})`);
+    onClose();
+    setTitle(""); setBody(""); setPicked([]); setMode("all");
+  };
+
+  return (
+    <Modal open={open} onClose={onClose} title="إرسال تنبيه وطني" wide
+      footer={<div className="flex justify-end gap-2"><GhostButton onClick={onClose}>إلغاء</GhostButton><PrimaryButton onClick={send}><Send className="h-3.5 w-3.5" /> إرسال التنبيه</PrimaryButton></div>}>
+      <div className="space-y-4">
+        <div className="flex items-start gap-3 rounded-xl border border-border bg-accent/40 p-3">
+          <Megaphone className="mt-0.5 h-4 w-4 text-primary" />
+          <div className="text-[11.5px] text-muted-foreground">
+            هذه القناة الرسمية لوزارة الصحة لإرسال إخطارات فورية إلى المؤسسات الصحية أو إلى جميع المواطنين المسجلين في المنصة.
+          </div>
+        </div>
+        <Field label="عنوان التنبيه" value={title} onChange={setTitle} placeholder="مثلاً: ارتفاع حالات الإنفلونزا في البصرة" />
+        <TextArea label="نص التنبيه" value={body} onChange={setBody} rows={4} placeholder="تفاصيل التنبيه والإجراءات الموصى بها…" />
+
+        <div>
+          <div className="text-[11px] font-medium text-muted-foreground mb-1.5">مستوى الأهمية</div>
+          <div className="flex flex-wrap gap-2">
+            {([
+              { id: "info", label: "إعلامي" },
+              { id: "success", label: "إيجابي" },
+              { id: "warn", label: "تحذير" },
+              { id: "danger", label: "خطر / إنذار" },
+            ] as const).map((t) => (
+              <button key={t.id} onClick={() => setTone(t.id)}
+                className={`rounded-full px-3 py-1.5 text-[11.5px] font-medium border transition ${tone===t.id ? "bg-foreground text-background border-foreground" : "border-border bg-background text-muted-foreground hover:text-foreground"}`}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[11px] font-medium text-muted-foreground mb-1.5">الفئة المستهدفة</div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {([
+              { id: "all", label: "جميع المستخدمين (مواطنون + مؤسسات)" },
+              { id: "citizens", label: "جميع المواطنين فقط" },
+              { id: "institutions", label: "جميع المؤسسات الصحية" },
+              { id: "custom", label: "مؤسسات مختارة…" },
+            ] as const).map((opt) => (
+              <button key={opt.id} onClick={() => setMode(opt.id)}
+                className={`rounded-xl border px-3 py-2 text-right text-[12px] transition ${mode===opt.id ? "border-primary bg-accent text-foreground" : "border-border bg-background text-muted-foreground hover:text-foreground"}`}>
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {mode === "custom" && (
+          <div className="rounded-xl border border-border bg-background p-3">
+            <div className="text-[11px] font-medium text-muted-foreground mb-2">اختر المؤسسات</div>
+            <div className="flex flex-wrap gap-2">
+              {ALL_ROLES.map((r) => (
+                <button key={r.id} onClick={() => toggle(r.id)}
+                  className={`rounded-full px-3 py-1 text-[11px] border transition ${picked.includes(r.id) ? "bg-primary text-primary-foreground border-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </Modal>
   );
 }

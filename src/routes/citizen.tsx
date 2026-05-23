@@ -8,7 +8,7 @@ import {
   Stethoscope, FileDown, CheckCircle2, LogOut,
 } from "lucide-react";
 import { store, useStore, downloadHealthRecord } from "@/lib/app-store";
-import { BookAppointmentDialog, NewReferralDialog, NotificationsBell } from "@/components/app-dialogs";
+import { BookAppointmentDialog, NewReferralDialog, NotificationsBell, FamilyDialog } from "@/components/app-dialogs";
 
 export const Route = createFileRoute("/citizen")({
   component: CitizenDashboard,
@@ -36,6 +36,7 @@ function CitizenDashboard() {
   const [tab, setTab] = useState<TabId>("overview");
   const [bookOpen, setBookOpen] = useState(false);
   const [refOpen, setRefOpen] = useState(false);
+  const [familyOpen, setFamilyOpen] = useState(false);
   const session = useStore((s) => s.session);
   const appointments = useStore((s) => s.appointments);
   const referrals = useStore((s) => s.referrals);
@@ -78,7 +79,7 @@ function CitizenDashboard() {
         </div>
 
         <div className="mt-7">
-          {tab === "overview" && <Overview onBook={() => setBookOpen(true)} onReferral={() => setRefOpen(true)} onDownload={download} appointments={appointments} referrals={referrals} />}
+          {tab === "overview" && <Overview onBook={() => setBookOpen(true)} onReferral={() => setRefOpen(true)} onDownload={download} onFamily={() => setFamilyOpen(true)} onSecurity={() => setTab("security")} appointments={appointments} referrals={referrals} />}
           {tab === "labs" && <Labs />}
           {tab === "imaging" && <Imaging />}
           {tab === "prescriptions" && <Prescriptions />}
@@ -90,6 +91,7 @@ function CitizenDashboard() {
 
       <BookAppointmentDialog open={bookOpen} onClose={() => setBookOpen(false)} patient={me} />
       <NewReferralDialog open={refOpen} onClose={() => setRefOpen(false)} patient={me} />
+      <FamilyDialog open={familyOpen} onClose={() => setFamilyOpen(false)} />
     </div>
   );
 }
@@ -235,12 +237,14 @@ function Vital({
 /* =================== Overview =================== */
 
 function Overview({
-  onBook, onReferral, onDownload, appointments, referrals,
+  onBook, onReferral, onDownload, onFamily, onSecurity, appointments, referrals,
 }: {
   onBook: () => void; onReferral: () => void; onDownload: () => void;
+  onFamily: () => void; onSecurity: () => void;
   appointments: Array<{ id: string; doctor: string; spec: string; facility: string; reason: string; date: string }>;
   referrals: Array<{ id: string; to: string; reason: string; urgency: string }>;
 }) {
+  const family = useStore((s) => s.family);
   return (
     <div className="grid gap-5 lg:grid-cols-3">
       <div className="space-y-5 lg:col-span-2">
@@ -314,33 +318,42 @@ function Overview({
       </div>
 
       <div className="space-y-5">
-        <Panel title="الأسرة" action="إدارة">
+        <section className="rounded-3xl border border-border bg-surface p-5 md:p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-[14px] font-semibold text-foreground">الأسرة</h2>
+            <button onClick={onFamily} className="inline-flex items-center gap-1 text-[12px] font-medium text-primary hover:underline">
+              إدارة <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+          </div>
           <div className="space-y-2.5">
-            {[
-              { n: "فاطمة (الزوجة)", a: "٣٤ سنة" },
-              { n: "يوسف (الابن)", a: "٨ سنوات · لقاح قادم" },
-              { n: "نور (الابنة)", a: "٥ سنوات" },
-            ].map((m, i) => (
-              <div key={i} className="flex items-center gap-3 rounded-xl border border-border bg-background p-2.5">
+            {family.slice(0, 4).map((m) => (
+              <button key={m.id} onClick={onFamily} className="flex w-full items-center gap-3 rounded-xl border border-border bg-background p-2.5 text-right hover:border-border-strong">
                 <div className="grid h-9 w-9 place-items-center rounded-full bg-muted text-[11px] font-semibold text-foreground">
-                  {m.n[0]}
+                  {m.name[0]}
                 </div>
-                <div className="flex-1">
-                  <div className="text-[12px] font-medium text-foreground">{m.n}</div>
-                  <div className="text-[10px] text-muted-foreground">{m.a}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[12px] font-medium text-foreground truncate">{m.name} ({m.relation})</div>
+                  <div className="text-[10px] text-muted-foreground truncate">{[m.age, m.note].filter(Boolean).join(" · ")}</div>
                 </div>
                 <Users className="h-4 w-4 text-muted-foreground" />
-              </div>
+              </button>
             ))}
+            {family.length === 0 && (
+              <div className="rounded-xl border border-dashed border-border bg-background p-4 text-center text-[11.5px] text-muted-foreground">
+                لا يوجد أفراد بعد — اضغط "إدارة" لإضافتهم
+              </div>
+            )}
           </div>
-        </Panel>
+        </section>
 
         <Panel title="إجراءات سريعة">
           <div className="grid grid-cols-2 gap-2">
             <Quick icon={Download} label="نسخة PDF" onClick={onDownload} />
             <Quick icon={Calendar} label="حجز موعد" onClick={onBook} />
             <Quick icon={Send} label="إحالة جديدة" onClick={onReferral} />
-            <Quick icon={ShieldCheck} label="سجل الأمان" />
+            <Quick icon={Users} label="إدارة الأسرة" onClick={onFamily} />
+            <Quick icon={ShieldCheck} label="سجل الأمان" onClick={onSecurity} />
+            <Quick icon={Bell} label="التنبيهات" onClick={() => { store.markAllRead("citizen"); toast.success("تم تعليم التنبيهات كمقروءة"); }} />
           </div>
         </Panel>
       </div>

@@ -531,17 +531,17 @@ function Prescribe({ onBack }: { onBack: () => void }) {
     : suggestions.slice(0, 4);
 
   const addMed = (name: string) => {
-    // simulate AI warning for penicillin allergy
-    const warning =
-      name.toLowerCase().includes("amoxicillin")
-        ? "تحذير: المريض لديه حساسية من البنسلين — قد يحدث تفاعل خطير."
-        : undefined;
+    const issues = checkDrugSafety([...meds.map((m) => m.name), name]);
+    const own = issues.find((i) => i.title.includes(name));
+    const warning = own ? `${own.title} — ${own.detail}` : undefined;
     setMeds((m) => [
       ...m,
       { id: Date.now(), name, dose: "قرص واحد", freq: "مرة يومياً", duration: "٧ أيام", warning },
     ]);
     setQuery("");
   };
+
+  const safetyIssues = checkDrugSafety(meds.map((m) => m.name));
 
   return (
     <div className="space-y-5">
@@ -657,11 +657,22 @@ function Prescribe({ onBack }: { onBack: () => void }) {
         <aside className="space-y-5">
           <Card title="فحوصات السلامة" icon={Sparkles}>
             <div className="space-y-2">
-              <CheckRow ok label="فحص الحساسية" />
-              <CheckRow ok label="فحص التداخلات الدوائية" />
+              <CheckRow ok={!safetyIssues.some((i) => i.title.startsWith("حساسية"))} label="فحص الحساسية" />
+              <CheckRow ok={!safetyIssues.some((i) => i.title.startsWith("تداخل"))} label="فحص التداخلات الدوائية" />
               <CheckRow ok label="فحص الجرعات غير الطبيعية" />
               <CheckRow ok label="فحص الصرف المكرر" />
             </div>
+            {safetyIssues.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {safetyIssues.map((i, idx) => (
+                  <div key={idx} className={`rounded-xl border p-2.5 text-[11px] ${i.severity === "critical" ? "border-destructive/30 bg-destructive/5 text-destructive" : "border-[oklch(0.8_0.12_70)] bg-[oklch(0.96_0.06_70)] text-[oklch(0.5_0.15_70)]"}`}>
+                    <div className="font-medium">{i.title}</div>
+                    <div className="mt-0.5 opacity-80">{i.detail}</div>
+                    {i.suggestion && <div className="mt-0.5 opacity-80">البديل: {i.suggestion}</div>}
+                  </div>
+                ))}
+              </div>
+            )}
           </Card>
 
           <Card title="تفاصيل الوصفة" icon={FileText}>

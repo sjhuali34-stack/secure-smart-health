@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Activity, Ambulance, Bed, AlertTriangle, Users, Siren, Heart, MapPin,
+  Activity, Ambulance, Bed, AlertTriangle, Users, Siren, Heart, MapPin, Plus, Minus, Hospital,
 } from "lucide-react";
+import { toast } from "sonner";
 import { RoleShell, Card, Stat, Row } from "@/components/role-shell";
+import { store } from "@/lib/app-store";
 
 export const Route = createFileRoute("/emergency")({
   component: EmergencyDashboard,

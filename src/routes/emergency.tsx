@@ -69,23 +69,7 @@ function EmergencyDashboard() {
           <Card><div className="text-xs text-muted-foreground">طوارئ أطفال</div><div className="mt-2 text-3xl font-semibold">4/10</div><div className="mt-1 text-[11px] text-success">متاح</div></Card>
         </div>
       )}
-      {tab === "disaster" && (
-        <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-semibold">وضع الكوارث</div>
-              <div className="mt-1 text-xs text-muted-foreground">تفعيل بروتوكول الإصابات الجماعية</div>
-            </div>
-            <button className="rounded-full bg-destructive px-4 py-2 text-xs font-semibold text-destructive-foreground">تفعيل</button>
-          </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-4 text-center">
-            <div className="rounded-xl border border-border p-3"><div className="text-2xl font-semibold text-destructive">0</div><div className="text-[11px] text-muted-foreground">أحمر</div></div>
-            <div className="rounded-xl border border-border p-3"><div className="text-2xl font-semibold text-[oklch(0.7_0.15_70)]">0</div><div className="text-[11px] text-muted-foreground">برتقالي</div></div>
-            <div className="rounded-xl border border-border p-3"><div className="text-2xl font-semibold text-[oklch(0.75_0.13_95)]">0</div><div className="text-[11px] text-muted-foreground">أصفر</div></div>
-            <div className="rounded-xl border border-border p-3"><div className="text-2xl font-semibold text-success">0</div><div className="text-[11px] text-muted-foreground">أخضر</div></div>
-          </div>
-        </Card>
-      )}
+      {tab === "disaster" && <DisasterMode />}
     </RoleShell>
   );
 }

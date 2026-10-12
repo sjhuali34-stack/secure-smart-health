@@ -318,6 +318,7 @@ function Overview({
       </div>
 
       <div className="space-y-5">
+        <InsuranceCard />
         <section className="rounded-3xl border border-border bg-surface p-5 md:p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-[14px] font-semibold text-foreground">الأسرة</h2>

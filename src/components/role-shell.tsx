@@ -3,7 +3,9 @@ import { Search, LogOut, Upload, type LucideIcon } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { NotificationsBell, UploadReportDialog } from "@/components/app-dialogs";
+import { AccessibilityMenu, LanguageSwitcher, OfflineIndicator } from "@/components/chrome-controls";
 import { store, type RoleId } from "@/lib/app-store";
+import { t } from "@/lib/i18n";
 
 export function RoleShell({
   icon: Icon,
@@ -52,24 +54,27 @@ export function RoleShell({
             <div className="relative">
               <Search className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
-                placeholder="بحث..."
+                placeholder={t("search")}
                 className="w-full rounded-full border border-border bg-background py-2 pr-9 pl-4 text-sm outline-none transition focus:border-border-strong"
               />
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <OfflineIndicator />
             <button
               onClick={() => setUploadOpen(true)}
               className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs hover:border-border-strong"
             >
-              <Upload className="h-3.5 w-3.5" /> رفع تقرير
+              <Upload className="h-3.5 w-3.5" /> {t("uploadReport")}
             </button>
             <NotificationsBell role={roleId} />
+            <LanguageSwitcher />
+            <AccessibilityMenu />
             <button
               onClick={logout}
               className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs hover:border-border-strong"
             >
-              <LogOut className="h-3.5 w-3.5" /> خروج
+              <LogOut className="h-3.5 w-3.5" /> {t("logout")}
             </button>
           </div>
         </div>

@@ -8,6 +8,7 @@ import {
   LogOut, UserPlus,
 } from "lucide-react";
 import { store, useStore } from "@/lib/app-store";
+import { checkDrugSafety } from "@/lib/drug-safety";
 import {
   NotificationsBell, BookAppointmentDialog, NewReferralDialog,
   RegisterCitizenDialog, UploadReportDialog,

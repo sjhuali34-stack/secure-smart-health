@@ -52,13 +52,7 @@ function PharmacistDashboard() {
           <Row title="RX-77823 — يوسف ناصر" meta="إنسولين قاعدي · شرائط فحص سكر" status="بانتظار التأمين" statusTone="warn" />
         </Card>
       )}
-      {tab === "verify" && (
-        <Card>
-          <Row title="تحذير تفاعل — RX-77819" meta="وارفارين + أسبرين — خطر نزيف" status="حرج" statusTone="danger" />
-          <Row title="حساسية مسجّلة — RX-77820" meta="بنسلين على ملف المريض" status="حرج" statusTone="danger" />
-          <Row title="جرعة عالية — RX-77815" meta="ميتفورمين 2500mg/يوم" status="مراجعة" statusTone="warn" />
-        </Card>
-      )}
+      {tab === "verify" && <InteractionChecker />}
       {tab === "inventory" && (
         <Card>
           <Row title="أموكسيسيلين 500mg" meta="المخزون: 28 علبة" status="منخفض" statusTone="warn" />

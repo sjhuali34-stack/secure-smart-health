@@ -570,3 +570,27 @@ function Security() {
     </Panel>
   );
 }
+
+function InsuranceCard() {
+  const ins = useStore((s) => s.insurance);
+  return (
+    <section className="rounded-3xl border border-border bg-surface p-5 md:p-6">
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-[14px] font-semibold text-foreground">التأمين الصحي</h2>
+        <span className={`rounded-full px-2.5 py-1 text-[10px] font-medium ${ins.status === "active" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}`}>
+          {ins.status === "active" ? "ساري" : "منتهٍ"}
+        </span>
+      </div>
+      <div className="space-y-2 text-[12px]">
+        <div className="flex justify-between"><span className="text-muted-foreground">الشركة</span><span className="font-medium text-foreground">{ins.provider}</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">الخطة</span><span className="font-medium text-foreground">{ins.plan}</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">نسبة التغطية</span><span className="font-medium text-foreground">{ins.coveragePct}٪</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">المتبقي من السقف</span><span className="font-medium text-foreground">{ins.remaining.toLocaleString("ar")} د.ع</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">صالح حتى</span><span className="font-medium text-foreground">{ins.expires}</span></div>
+      </div>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+        <div className="h-full rounded-full bg-primary" style={{ width: `${ins.coveragePct}%` }} />
+      </div>
+    </section>
+  );
+}

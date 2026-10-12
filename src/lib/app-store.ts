@@ -114,6 +114,14 @@ const initial: State = {
     { id: "F2", name: "يوسف أحمد", relation: "الابن", age: "٨ سنوات", healthId: "12-4567-8901-25", note: "لقاح قادم: ٢٠ نوفمبر" },
     { id: "F3", name: "نور أحمد", relation: "الابنة", age: "٥ سنوات", healthId: "12-4567-8901-26" },
   ],
+  insurance: {
+    provider: "شركة التأمين الوطنية",
+    plan: "الخطة الشاملة — عائلية",
+    coveragePct: 85,
+    remaining: 1250000,
+    expires: "31/12/2026",
+    status: "active",
+  },
 };
 
 function load(): State {

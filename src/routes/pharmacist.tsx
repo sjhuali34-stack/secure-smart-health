@@ -64,3 +64,51 @@ function PharmacistDashboard() {
     </RoleShell>
   );
 }
+
+/* ---------- Live interaction checker ---------- */
+const CHECKABLE = ["Warfarin 5mg", "Aspirin 81mg", "Ibuprofen 400mg", "Metformin 1000mg", "Atorvastatin 20mg", "Amoxicillin 875mg", "Omeprazole 20mg", "Losartan 50mg", "Insulin Glargine", "Paracetamol 500mg"];
+
+function InteractionChecker() {
+  const [picked, setPicked] = useState<string[]>(["Warfarin 5mg", "Aspirin 81mg"]);
+  const issues = checkDrugSafety(picked);
+
+  const toggle = (m: string) =>
+    setPicked((p) => (p.includes(m) ? p.filter((x) => x !== m) : [...p, m]));
+
+  return (
+    <div className="space-y-4">
+      <Card>
+        <div className="mb-3 text-[13px] font-semibold">فحص التداخلات قبل الصرف</div>
+        <div className="mb-3 text-[11px] text-muted-foreground">اختر أدوية الوصفة لفحص الحساسية والتداخلات والجرعات تلقائيًا:</div>
+        <div className="flex flex-wrap gap-1.5">
+          {CHECKABLE.map((m) => (
+            <button
+              key={m}
+              onClick={() => toggle(m)}
+              className={`rounded-full border px-2.5 py-1 text-[11px] transition ${picked.includes(m) ? "border-primary bg-accent text-foreground" : "border-border bg-background text-muted-foreground hover:text-foreground"}`}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
+      </Card>
+      <Card>
+        {issues.length === 0 ? (
+          <div className="flex items-center gap-2 text-[12.5px] text-success">
+            <CheckCircle2 className="h-4 w-4" /> لا توجد تداخلات أو حساسية — الوصفة آمنة للصرف.
+          </div>
+        ) : (
+          issues.map((i, idx) => (
+            <Row
+              key={idx}
+              title={i.title}
+              meta={i.suggestion ? `${i.detail} · البديل: ${i.suggestion}` : i.detail}
+              status={i.severity === "critical" ? "حرج" : "مراجعة"}
+              statusTone={i.severity === "critical" ? "danger" : "warn"}
+            />
+          ))
+        )}
+      </Card>
+    </div>
+  );
+}

@@ -4,6 +4,7 @@ import {
   Pill, Inbox, CheckCircle2, AlertTriangle, Package, BarChart3, ScanLine,
 } from "lucide-react";
 import { RoleShell, Card, Stat, Row } from "@/components/role-shell";
+import { checkDrugSafety } from "@/lib/drug-safety";
 
 export const Route = createFileRoute("/pharmacist")({
   component: PharmacistDashboard,

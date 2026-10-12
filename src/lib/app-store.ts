@@ -77,6 +77,15 @@ export type Session = {
   healthId: string;
 } | null;
 
+export type Insurance = {
+  provider: string;
+  plan: string;
+  coveragePct: number;   // نسبة التغطية
+  remaining: number;     // المبلغ المتبقي من السقف السنوي (د.ع)
+  expires: string;
+  status: "active" | "expired";
+};
+
 type State = {
   session: Session;
   notifications: Notification[];
@@ -85,6 +94,7 @@ type State = {
   reports: ReportFile[];
   citizens: Citizen[];
   family: FamilyMember[];
+  insurance: Insurance;
 };
 
 const KEY = "ur-sehr-store-v2";

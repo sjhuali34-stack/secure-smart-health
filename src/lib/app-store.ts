@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 
 export type RoleId =
   | "citizen" | "doctor" | "pharmacist" | "nurse" | "lab"
-  | "radiology" | "emergency" | "ministry" | "community" | "physio";
+  | "radiology" | "emergency" | "ministry" | "community" | "physio" | "research";
 
 export type Notification = {
   id: string;

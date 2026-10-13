@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResearchRouteImport } from './routes/research'
 import { Route as RadiologyRouteImport } from './routes/radiology'
 import { Route as PhysioRouteImport } from './routes/physio'
 import { Route as PharmacistRouteImport } from './routes/pharmacist'
@@ -21,6 +22,11 @@ import { Route as CommunityRouteImport } from './routes/community'
 import { Route as CitizenRouteImport } from './routes/citizen'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ResearchRoute = ResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RadiologyRoute = RadiologyRouteImport.update({
   id: '/radiology',
   path: '/radiology',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/pharmacist': typeof PharmacistRoute
   '/physio': typeof PhysioRoute
   '/radiology': typeof RadiologyRoute
+  '/research': typeof ResearchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/pharmacist': typeof PharmacistRoute
   '/physio': typeof PhysioRoute
   '/radiology': typeof RadiologyRoute
+  '/research': typeof ResearchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/pharmacist': typeof PharmacistRoute
   '/physio': typeof PhysioRoute
   '/radiology': typeof RadiologyRoute
+  '/research': typeof ResearchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/pharmacist'
     | '/physio'
     | '/radiology'
+    | '/research'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/pharmacist'
     | '/physio'
     | '/radiology'
+    | '/research'
   id:
     | '__root__'
     | '/'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/pharmacist'
     | '/physio'
     | '/radiology'
+    | '/research'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,10 +183,18 @@ export interface RootRouteChildren {
   PharmacistRoute: typeof PharmacistRoute
   PhysioRoute: typeof PhysioRoute
   RadiologyRoute: typeof RadiologyRoute
+  ResearchRoute: typeof ResearchRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/research': {
+      id: '/research'
+      path: '/research'
+      fullPath: '/research'
+      preLoaderRoute: typeof ResearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/radiology': {
       id: '/radiology'
       path: '/radiology'
@@ -267,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   PharmacistRoute: PharmacistRoute,
   PhysioRoute: PhysioRoute,
   RadiologyRoute: RadiologyRoute,
+  ResearchRoute: ResearchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

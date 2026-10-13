@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import {
   User, Stethoscope, Pill, HeartPulse, FlaskConical, ScanLine,
   Activity, Building2, ShieldCheck, Fingerprint, ScanFace, KeyRound,
-  CreditCard, ArrowLeft, Globe, Lock, HeartHandshake, Dumbbell,
+  CreditCard, ArrowLeft, Globe, Lock, HeartHandshake, Dumbbell, Microscope,
 } from "lucide-react";
 import { store, type RoleId } from "@/lib/app-store";
 import { RegisterCitizenDialog } from "@/components/app-dialogs";
@@ -24,7 +24,7 @@ type Role = {
   name: string;
   desc: string;
   icon: React.ComponentType<{ className?: string }>;
-  to: "/citizen" | "/doctor" | "/pharmacist" | "/nurse" | "/lab" | "/radiology" | "/emergency" | "/ministry" | "/community" | "/physio";
+  to: "/citizen" | "/doctor" | "/pharmacist" | "/nurse" | "/lab" | "/radiology" | "/emergency" | "/ministry" | "/community" | "/physio" | "/research";
 };
 
 const ROLES: Role[] = [
@@ -38,6 +38,7 @@ const ROLES: Role[] = [
   { id: "ministry", name: "وزارة الصحة", desc: "اللوحة الوطنية", icon: Building2, to: "/ministry" },
   { id: "community", name: "صحة المجتمع", desc: "زيارات وحملات", icon: HeartHandshake, to: "/community" },
   { id: "physio", name: "العلاج الطبيعي", desc: "جلسات التأهيل", icon: Dumbbell, to: "/physio" },
+  { id: "research", name: "البحث العلمي", desc: "بيانات مجهولة الهوية", icon: Microscope, to: "/research" },
 ];
 
 type Method = { id: string; name: string; icon: React.ComponentType<{ className?: string }> };

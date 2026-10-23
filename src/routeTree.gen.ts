@@ -21,6 +21,7 @@ import { Route as DoctorRouteImport } from './routes/doctor'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as CitizenRouteImport } from './routes/citizen'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiResearchAnswerRouteImport } from './routes/api/research-answer'
 
 const ResearchRoute = ResearchRouteImport.update({
   id: '/research',
@@ -82,6 +83,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiResearchAnswerRoute = ApiResearchAnswerRouteImport.update({
+  id: '/api/research-answer',
+  path: '/api/research-answer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/physio': typeof PhysioRoute
   '/radiology': typeof RadiologyRoute
   '/research': typeof ResearchRoute
+  '/api/research-answer': typeof ApiResearchAnswerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/physio': typeof PhysioRoute
   '/radiology': typeof RadiologyRoute
   '/research': typeof ResearchRoute
+  '/api/research-answer': typeof ApiResearchAnswerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/physio': typeof PhysioRoute
   '/radiology': typeof RadiologyRoute
   '/research': typeof ResearchRoute
+  '/api/research-answer': typeof ApiResearchAnswerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/physio'
     | '/radiology'
     | '/research'
+    | '/api/research-answer'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/physio'
     | '/radiology'
     | '/research'
+    | '/api/research-answer'
   id:
     | '__root__'
     | '/'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/physio'
     | '/radiology'
     | '/research'
+    | '/api/research-answer'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   PhysioRoute: typeof PhysioRoute
   RadiologyRoute: typeof RadiologyRoute
   ResearchRoute: typeof ResearchRoute
+  ApiResearchAnswerRoute: typeof ApiResearchAnswerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -272,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/research-answer': {
+      id: '/api/research-answer'
+      path: '/api/research-answer'
+      fullPath: '/api/research-answer'
+      preLoaderRoute: typeof ApiResearchAnswerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -288,6 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   PhysioRoute: PhysioRoute,
   RadiologyRoute: RadiologyRoute,
   ResearchRoute: ResearchRoute,
+  ApiResearchAnswerRoute: ApiResearchAnswerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

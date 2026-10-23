@@ -20,6 +20,10 @@ export const Route = createFileRoute("/doctor")({
     meta: [
       { title: "لوحة الطبيب | UR-SEHR" },
       { name: "description", content: "لوحة الطبيب: التشخيص، خطط العلاج، وإنشاء الوصفات." },
+      { property: "og:title", content: "لوحة الطبيب | UR-SEHR" },
+      { property: "og:description", content: "لوحة الطبيب: التشخيص، خطط العلاج، وإنشاء الوصفات." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

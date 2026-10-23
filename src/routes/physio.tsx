@@ -11,6 +11,10 @@ export const Route = createFileRoute("/physio")({
     meta: [
       { title: "العلاج الطبيعي | UR-SEHR" },
       { name: "description", content: "جلسات وخطط التأهيل البدني." },
+      { property: "og:title", content: "العلاج الطبيعي | UR-SEHR" },
+      { property: "og:description", content: "جلسات وخطط التأهيل البدني." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

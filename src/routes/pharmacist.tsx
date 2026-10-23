@@ -12,6 +12,10 @@ export const Route = createFileRoute("/pharmacist")({
     meta: [
       { title: "لوحة الصيدلي | UR-SEHR" },
       { name: "description", content: "صرف الوصفات وإدارة المخزون الدوائي." },
+      { property: "og:title", content: "لوحة الصيدلي | UR-SEHR" },
+      { property: "og:description", content: "صرف الوصفات وإدارة المخزون الدوائي." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

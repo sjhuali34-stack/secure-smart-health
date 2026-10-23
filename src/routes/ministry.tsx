@@ -13,6 +13,10 @@ export const Route = createFileRoute("/ministry")({
     meta: [
       { title: "وزارة الصحة | UR-SEHR" },
       { name: "description", content: "اللوحة الوطنية لمؤشرات الصحة العامة." },
+      { property: "og:title", content: "وزارة الصحة | UR-SEHR" },
+      { property: "og:description", content: "اللوحة الوطنية لمؤشرات الصحة العامة." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

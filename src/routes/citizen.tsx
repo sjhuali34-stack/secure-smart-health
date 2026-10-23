@@ -16,6 +16,10 @@ export const Route = createFileRoute("/citizen")({
     meta: [
       { title: "لوحة المواطن | UR-SEHR" },
       { name: "description", content: "السجل الصحي الذكي للمواطن: التحاليل، الأشعة، الوصفات، والإحالات." },
+      { property: "og:title", content: "لوحة المواطن | UR-SEHR" },
+      { property: "og:description", content: "السجل الصحي الذكي للمواطن: التحاليل، الأشعة، الوصفات، والإحالات." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

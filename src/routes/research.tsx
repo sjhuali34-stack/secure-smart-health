@@ -3,6 +3,8 @@ import { useMemo, useState } from "react";
 import { Microscope, BarChart3, Table2, FileText, Download, ShieldCheck, Users, Activity, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { RoleShell, Card, Stat } from "@/components/role-shell";
+import { PROV, DX, AGES, filterResearch, type Rec, type ResearchFilters } from "@/lib/research-data";
+import { ResearchAssistant } from "@/components/research-assistant";
 
 export const Route = createFileRoute("/research")({
   component: ResearchDashboard,
@@ -24,29 +26,6 @@ const TABS = [
   { id: "summary", label: "ملخص النتائج", icon: FileText },
 ];
 
-// Anonymized record: no name, national ID, phone or address.
-type Rec = { code: string; gender: "ذكر" | "أنثى"; ageGroup: string; province: string; diagnosis: string; vaccinated: boolean; year: number; outcome: "تعافٍ" | "مزمن" | "تنويم" };
-
-const PROV = ["بغداد", "البصرة", "نينوى", "أربيل", "النجف", "كربلاء"];
-const DX = ["سكري نوع 2", "ارتفاع ضغط الدم", "ربو", "إنفلونزا موسمية", "فقر الدم", "أمراض القلب"];
-const AGES = ["0-17", "18-39", "40-59", "60+"];
-const OUT: Rec["outcome"][] = ["تعافٍ", "مزمن", "تنويم"];
-
-function seeded(n: number) { let s = n; return () => (s = (s * 9301 + 49297) % 233280) / 233280; }
-const DATA: Rec[] = (() => {
-  const r = seeded(42);
-  return Array.from({ length: 600 }, (_, i) => ({
-    code: `ANON-${(100000 + i * 37).toString(36).toUpperCase()}`,
-    gender: r() > 0.5 ? "ذكر" : "أنثى",
-    ageGroup: AGES[Math.floor(r() * 4)],
-    province: PROV[Math.floor(r() * PROV.length)],
-    diagnosis: DX[Math.floor(r() * DX.length)],
-    vaccinated: r() > 0.3,
-    year: 2022 + Math.floor(r() * 5),
-    outcome: OUT[Math.floor(r() * 3)],
-  }));
-})();
-
 const sel = "rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none";
 
 function countBy(rows: Rec[], k: keyof Rec) {
@@ -57,11 +36,8 @@ function countBy(rows: Rec[], k: keyof Rec) {
 
 function ResearchDashboard() {
   const [tab, setTab] = useState("indicators");
-  const [f, setF] = useState({ province: "", diagnosis: "", gender: "", ageGroup: "", year: "" });
-  const rows = useMemo(() => DATA.filter((r) =>
-    (!f.province || r.province === f.province) && (!f.diagnosis || r.diagnosis === f.diagnosis) &&
-    (!f.gender || r.gender === f.gender) && (!f.ageGroup || r.ageGroup === f.ageGroup) && (!f.year || String(r.year) === f.year)
-  ), [f]);
+  const [f, setF] = useState<ResearchFilters>({ province: "", diagnosis: "", gender: "", ageGroup: "", year: "" });
+  const rows = useMemo(() => filterResearch(f), [f]);
 
   const exportFile = (type: "csv" | "json") => {
     const cols: (keyof Rec)[] = ["code", "gender", "ageGroup", "province", "diagnosis", "vaccinated", "year", "outcome"];
@@ -126,6 +102,7 @@ function ResearchDashboard() {
     <RoleShell icon={Microscope} title="البحث العلمي" subtitle="بيانات مجهولة الهوية للباحثين المعتمدين"
       tabs={TABS} active={tab} onTab={setTab} roleId="research" reportKind="تقرير بحثي">
       {filters}
+      <ResearchAssistant filters={f} count={rows.length} />
       {tab === "indicators" && (
         <>
           <div className="mb-4 grid gap-4 md:grid-cols-4">

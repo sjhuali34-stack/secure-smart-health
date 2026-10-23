@@ -15,6 +15,10 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "تسجيل الدخول | UR-SEHR" },
       { name: "description", content: "بوابة الدخول الموحدة لمنصة اور الصحية الوطنية." },
+      { property: "og:title", content: "تسجيل الدخول | UR-SEHR" },
+      { property: "og:description", content: "بوابة الدخول الموحدة لمنصة اور الصحية الوطنية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

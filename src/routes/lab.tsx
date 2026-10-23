@@ -11,6 +11,10 @@ export const Route = createFileRoute("/lab")({
     meta: [
       { title: "لوحة المختبر | UR-SEHR" },
       { name: "description", content: "إدارة عينات وتحاليل المختبر." },
+      { property: "og:title", content: "لوحة المختبر | UR-SEHR" },
+      { property: "og:description", content: "إدارة عينات وتحاليل المختبر." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

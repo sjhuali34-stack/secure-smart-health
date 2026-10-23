@@ -86,8 +86,9 @@ export function AccessibilityMenu() {
 }
 
 export function OfflineIndicator() {
-  const [online, setOnline] = useState(() => (typeof navigator === "undefined" ? true : navigator.onLine));
+  const [online, setOnline] = useState(true);
   useEffect(() => {
+    setOnline(navigator.onLine);
     const on = () => { setOnline(true); toast.success(t("synced")); };
     const off = () => { setOnline(false); toast.warning(t("offline")); };
     window.addEventListener("online", on);

@@ -9,68 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ResearchRouteImport } from './routes/research'
-import { Route as RadiologyRouteImport } from './routes/radiology'
-import { Route as PhysioRouteImport } from './routes/physio'
-import { Route as PharmacistRouteImport } from './routes/pharmacist'
-import { Route as NurseRouteImport } from './routes/nurse'
-import { Route as MinistryRouteImport } from './routes/ministry'
-import { Route as LabRouteImport } from './routes/lab'
-import { Route as EmergencyRouteImport } from './routes/emergency'
-import { Route as DoctorRouteImport } from './routes/doctor'
-import { Route as CommunityRouteImport } from './routes/community'
-import { Route as CitizenRouteImport } from './routes/citizen'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CitizenRouteImport } from './routes/citizen'
+import { Route as CommunityRouteImport } from './routes/community'
+import { Route as DoctorRouteImport } from './routes/doctor'
+import { Route as EmergencyRouteImport } from './routes/emergency'
+import { Route as LabRouteImport } from './routes/lab'
+import { Route as MinistryRouteImport } from './routes/ministry'
+import { Route as NurseRouteImport } from './routes/nurse'
+import { Route as PharmacistRouteImport } from './routes/pharmacist'
+import { Route as PhysioRouteImport } from './routes/physio'
+import { Route as RadiologyRouteImport } from './routes/radiology'
+import { Route as ResearchRouteImport } from './routes/research'
 import { Route as ApiResearchAnswerRouteImport } from './routes/api/research-answer'
 
-const ResearchRoute = ResearchRouteImport.update({
-  id: '/research',
-  path: '/research',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RadiologyRoute = RadiologyRouteImport.update({
-  id: '/radiology',
-  path: '/radiology',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PhysioRoute = PhysioRouteImport.update({
-  id: '/physio',
-  path: '/physio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PharmacistRoute = PharmacistRouteImport.update({
-  id: '/pharmacist',
-  path: '/pharmacist',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NurseRoute = NurseRouteImport.update({
-  id: '/nurse',
-  path: '/nurse',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MinistryRoute = MinistryRouteImport.update({
-  id: '/ministry',
-  path: '/ministry',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabRoute = LabRouteImport.update({
-  id: '/lab',
-  path: '/lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EmergencyRoute = EmergencyRouteImport.update({
-  id: '/emergency',
-  path: '/emergency',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DoctorRoute = DoctorRouteImport.update({
-  id: '/doctor',
-  path: '/doctor',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommunityRoute = CommunityRouteImport.update({
-  id: '/community',
-  path: '/community',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CitizenRoute = CitizenRouteImport.update({
@@ -78,9 +33,54 @@ const CitizenRoute = CitizenRouteImport.update({
   path: '/citizen',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DoctorRoute = DoctorRouteImport.update({
+  id: '/doctor',
+  path: '/doctor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmergencyRoute = EmergencyRouteImport.update({
+  id: '/emergency',
+  path: '/emergency',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabRoute = LabRouteImport.update({
+  id: '/lab',
+  path: '/lab',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinistryRoute = MinistryRouteImport.update({
+  id: '/ministry',
+  path: '/ministry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NurseRoute = NurseRouteImport.update({
+  id: '/nurse',
+  path: '/nurse',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PharmacistRoute = PharmacistRouteImport.update({
+  id: '/pharmacist',
+  path: '/pharmacist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhysioRoute = PhysioRouteImport.update({
+  id: '/physio',
+  path: '/physio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RadiologyRoute = RadiologyRouteImport.update({
+  id: '/radiology',
+  path: '/radiology',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchRoute = ResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiResearchAnswerRoute = ApiResearchAnswerRouteImport.update({
@@ -201,74 +201,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/research': {
-      id: '/research'
-      path: '/research'
-      fullPath: '/research'
-      preLoaderRoute: typeof ResearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/radiology': {
-      id: '/radiology'
-      path: '/radiology'
-      fullPath: '/radiology'
-      preLoaderRoute: typeof RadiologyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/physio': {
-      id: '/physio'
-      path: '/physio'
-      fullPath: '/physio'
-      preLoaderRoute: typeof PhysioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pharmacist': {
-      id: '/pharmacist'
-      path: '/pharmacist'
-      fullPath: '/pharmacist'
-      preLoaderRoute: typeof PharmacistRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/nurse': {
-      id: '/nurse'
-      path: '/nurse'
-      fullPath: '/nurse'
-      preLoaderRoute: typeof NurseRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ministry': {
-      id: '/ministry'
-      path: '/ministry'
-      fullPath: '/ministry'
-      preLoaderRoute: typeof MinistryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab': {
-      id: '/lab'
-      path: '/lab'
-      fullPath: '/lab'
-      preLoaderRoute: typeof LabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/emergency': {
-      id: '/emergency'
-      path: '/emergency'
-      fullPath: '/emergency'
-      preLoaderRoute: typeof EmergencyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/doctor': {
-      id: '/doctor'
-      path: '/doctor'
-      fullPath: '/doctor'
-      preLoaderRoute: typeof DoctorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/community': {
-      id: '/community'
-      path: '/community'
-      fullPath: '/community'
-      preLoaderRoute: typeof CommunityRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/citizen': {
@@ -278,11 +215,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CitizenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/doctor': {
+      id: '/doctor'
+      path: '/doctor'
+      fullPath: '/doctor'
+      preLoaderRoute: typeof DoctorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/emergency': {
+      id: '/emergency'
+      path: '/emergency'
+      fullPath: '/emergency'
+      preLoaderRoute: typeof EmergencyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab': {
+      id: '/lab'
+      path: '/lab'
+      fullPath: '/lab'
+      preLoaderRoute: typeof LabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ministry': {
+      id: '/ministry'
+      path: '/ministry'
+      fullPath: '/ministry'
+      preLoaderRoute: typeof MinistryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nurse': {
+      id: '/nurse'
+      path: '/nurse'
+      fullPath: '/nurse'
+      preLoaderRoute: typeof NurseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pharmacist': {
+      id: '/pharmacist'
+      path: '/pharmacist'
+      fullPath: '/pharmacist'
+      preLoaderRoute: typeof PharmacistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/physio': {
+      id: '/physio'
+      path: '/physio'
+      fullPath: '/physio'
+      preLoaderRoute: typeof PhysioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/radiology': {
+      id: '/radiology'
+      path: '/radiology'
+      fullPath: '/radiology'
+      preLoaderRoute: typeof RadiologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research': {
+      id: '/research'
+      path: '/research'
+      fullPath: '/research'
+      preLoaderRoute: typeof ResearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/research-answer': {

@@ -1,0 +1,3 @@
+- [ ] Add filtered, anonymized research questions and streamed grounded answers.
+- [ ] Verify privacy, filtering, live answers and app health.
+- [ ] Apply required package security update.

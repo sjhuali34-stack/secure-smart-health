@@ -14,6 +14,10 @@ export const Route = createFileRoute("/community")({
     meta: [
       { title: "تقني صحة المجتمع | UR-SEHR" },
       { name: "description", content: "زيارات منزلية وحملات الصحة المجتمعية." },
+      { property: "og:title", content: "تقني صحة المجتمع | UR-SEHR" },
+      { property: "og:description", content: "زيارات منزلية وحملات الصحة المجتمعية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

@@ -12,6 +12,10 @@ export const Route = createFileRoute("/nurse")({
     meta: [
       { title: "لوحة الممرض | UR-SEHR" },
       { name: "description", content: "إدارة العلامات الحيوية والمهام التمريضية." },
+      { property: "og:title", content: "لوحة الممرض | UR-SEHR" },
+      { property: "og:description", content: "إدارة العلامات الحيوية والمهام التمريضية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

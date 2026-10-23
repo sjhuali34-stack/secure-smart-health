@@ -11,6 +11,10 @@ export const Route = createFileRoute("/radiology")({
     meta: [
       { title: "لوحة الأشعة | UR-SEHR" },
       { name: "description", content: "إدارة طلبات وتقارير الأشعة." },
+      { property: "og:title", content: "لوحة الأشعة | UR-SEHR" },
+      { property: "og:description", content: "إدارة طلبات وتقارير الأشعة." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

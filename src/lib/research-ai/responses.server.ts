@@ -49,6 +49,9 @@ export function createResponsesCall(
   return {
     result,
     response: () =>
-      withLovableAiGatewayRunIdHeader(result.toUIMessageStreamResponse({ sendReasoning: true }), runIdFetch),
+      withLovableAiGatewayRunIdHeader(result.toUIMessageStreamResponse({ sendReasoning: true, onError: error => {
+        if (error instanceof Error) return error.message;
+        return "تعذر إكمال الإجابة من Lovable AI.";
+      } }), runIdFetch),
   };
 }

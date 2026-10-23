@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Microscope, BarChart3, Table2, FileText, Download, ShieldCheck, Users, Activity, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { RoleShell, Card, Stat } from "@/components/role-shell";
-import { DATA, PROV, DX, AGES, filterResearch, type Rec, type ResearchFilters } from "@/lib/research-data";
+import { PROV, DX, AGES, filterResearch, type Rec, type ResearchFilters } from "@/lib/research-data";
 import { ResearchAssistant } from "@/components/research-assistant";
 
 export const Route = createFileRoute("/research")({

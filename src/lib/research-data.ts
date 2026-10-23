@@ -7,9 +7,9 @@ export type Rec = { code: string; gender: "ذكر" | "أنثى"; ageGroup: strin
 export const filtersSchema = z.object({
   province: z.string().refine(v => !v || PROV.includes(v)),
   diagnosis: z.string().refine(v => !v || DX.includes(v)),
-  gender: z.enum(["", "ذكر", "أنثى"]),
+  gender: z.string().refine(v => ["", "ذكر", "أنثى"].includes(v)),
   ageGroup: z.string().refine(v => !v || AGES.includes(v)),
-  year: z.enum(["", "2022", "2023", "2024", "2025", "2026"]),
+  year: z.string().refine(v => ["", "2022", "2023", "2024", "2025", "2026"].includes(v)),
 }).strict();
 export type ResearchFilters = z.infer<typeof filtersSchema>;
 const OUT: Rec["outcome"][] = ["تعافٍ", "مزمن", "تنويم"];

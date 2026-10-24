@@ -4,7 +4,8 @@ import { useSyncExternalStore } from "react";
 
 export type RoleId =
   | "citizen" | "doctor" | "pharmacist" | "nurse" | "lab"
-  | "radiology" | "emergency" | "ministry" | "community" | "physio" | "research";
+  | "radiology" | "emergency" | "ministry" | "community" | "physio" | "research"
+  | "authorities";
 
 export type Notification = {
   id: string;
@@ -86,6 +87,20 @@ export type Insurance = {
   status: "active" | "expired";
 };
 
+// بلاغ بيئي ميداني من صحة المجتمع → وزارة الصحة
+export type EnvReport = {
+  id: string;
+  type: import("@/lib/env-data").EnvHazardType;
+  severity: import("@/lib/env-data").EnvSeverity;
+  governorate: string;
+  location: string;
+  description: string;
+  photos: string[];      // small JPEG data URLs
+  reporter: string;
+  at: number;
+  status: "new" | "reviewing" | "dispatched" | "closed";
+};
+
 type State = {
   session: Session;
   notifications: Notification[];
@@ -95,9 +110,10 @@ type State = {
   citizens: Citizen[];
   family: FamilyMember[];
   insurance: Insurance;
+  envReports: EnvReport[];
 };
 
-const KEY = "ur-sehr-store-v2";
+const KEY = "ur-sehr-store-v3";
 const initial: State = {
   session: null,
   notifications: [

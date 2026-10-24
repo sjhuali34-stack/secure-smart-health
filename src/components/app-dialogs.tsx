@@ -382,6 +382,7 @@ const ALL_ROLES: { id: RoleId; label: string }[] = [
   { id: "emergency", label: "الطوارئ" },
   { id: "community", label: "صحة المجتمع" },
   { id: "physio", label: "العلاج الطبيعي" },
+  { id: "authorities", label: "الهيئات الصحية" },
 ];
 
 export function BroadcastAlertDialog({ open, onClose }: { open: boolean; onClose: () => void }) {

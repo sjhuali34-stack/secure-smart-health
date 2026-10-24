@@ -2,20 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   HeartHandshake, Home, Syringe, Users, ClipboardList, MapPin, BarChart3,
-  FileText, FlaskConical, ScanLine, Pill, Send, ShieldCheck, Download,
+  FileText, FlaskConical, ScanLine, Pill, Send, ShieldCheck, Download, Leaf, Camera,
 } from "lucide-react";
 import { toast } from "sonner";
 import { RoleShell, Card, Stat, Row } from "@/components/role-shell";
-import { downloadHealthRecord } from "@/lib/app-store";
+import { downloadHealthRecord, useStore } from "@/lib/app-store";
+import { EnvReportDialog } from "@/components/env-report-dialog";
+import { HAZARD_META, SEVERITY_META } from "@/lib/env-data";
 
 export const Route = createFileRoute("/community")({
   component: CommunityDashboard,
   head: () => ({
     meta: [
       { title: "تقني صحة المجتمع | UR-SEHR" },
-      { name: "description", content: "زيارات منزلية وحملات الصحة المجتمعية." },
+      { name: "description", content: "زيارات منزلية وحملات الصحة المجتمعية والإبلاغ البيئي." },
       { property: "og:title", content: "تقني صحة المجتمع | UR-SEHR" },
-      { property: "og:description", content: "زيارات منزلية وحملات الصحة المجتمعية." },
+      { property: "og:description", content: "زيارات منزلية وحملات الصحة المجتمعية والإبلاغ البيئي." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -28,6 +30,7 @@ const TABS = [
   { id: "campaigns", label: "الحملات", icon: Syringe },
   { id: "families", label: "العائلات", icon: Users },
   { id: "record", label: "السجل الصحي الكامل", icon: FileText },
+  { id: "env", label: "الإبلاغ البيئي", icon: Leaf },
   { id: "reports", label: "التقارير الميدانية", icon: ClipboardList },
 ];
 
@@ -84,6 +87,7 @@ function CommunityDashboard() {
         </Card>
       )}
       {tab === "record" && <FullRecord />}
+      {tab === "env" && <EnvReporting />}
       {tab === "reports" && (
         <Card>
           <Row title="تقرير ميداني #218" meta="حالات تسمم غذائي محتملة — 3 منازل" status="مرسل" statusTone="danger" />
@@ -92,6 +96,74 @@ function CommunityDashboard() {
         </Card>
       )}
     </RoleShell>
+  );
+}
+
+/* ---------- الإبلاغ البيئي ---------- */
+function EnvReporting() {
+  const [open, setOpen] = useState(false);
+  const myReports = useStore((s) => s.envReports);
+
+  return (
+    <div className="space-y-4">
+      <Card className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="grid h-11 w-11 place-items-center rounded-xl bg-accent text-primary">
+            <Leaf className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="text-sm font-semibold">الوقاية واجبنا — بلّغ عن أي خطر بيئي</div>
+            <div className="mt-0.5 text-[11px] text-muted-foreground">التقط صورة للمكان الملوث أو التسرب أو بؤرة النفايات، وتصل مباشرة إلى وزارة الصحة.</div>
+          </div>
+        </div>
+        <button onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-2 rounded-xl bg-foreground px-4 py-2.5 text-[12.5px] font-medium text-background hover:opacity-90">
+          <Camera className="h-4 w-4" /> بلاغ بيئي جديد
+        </button>
+      </Card>
+
+      <Card>
+        <div className="mb-3 flex items-center justify-between">
+          <div className="text-sm font-semibold">بلاغاتي المرسلة</div>
+          <span className="rounded-full bg-muted px-2.5 py-1 text-[10px] text-muted-foreground">{myReports.length} بلاغ</span>
+        </div>
+        {myReports.length === 0 && (
+          <div className="rounded-xl border border-dashed border-border bg-background p-8 text-center text-[12px] text-muted-foreground">
+            لم ترسل أي بلاغ بيئي بعد — اضغط "بلاغ بيئي جديد" عند رصد خطر في الميدان.
+          </div>
+        )}
+        <div className="space-y-3">
+          {myReports.map((r) => (
+            <div key={r.id} className="rounded-xl border border-border bg-background p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="text-[13px] font-medium text-foreground">{HAZARD_META[r.type].label} — {r.governorate}</div>
+                  <div className="mt-0.5 text-[11px] text-muted-foreground">{r.location} · {new Date(r.at).toLocaleString("ar")} · خطورة: {SEVERITY_META[r.severity].label}</div>
+                </div>
+                <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                  r.status === "new" ? "bg-destructive/10 text-destructive" :
+                  r.status === "reviewing" ? "bg-accent text-primary" :
+                  r.status === "dispatched" ? "bg-[oklch(0.95_0.1_70)] text-[oklch(0.5_0.15_70)]" :
+                  "bg-success/10 text-success"
+                }`}>
+                  {r.status === "new" ? "بانتظار الوزارة" : r.status === "reviewing" ? "قيد المراجعة" : r.status === "dispatched" ? "فريق في الطريق" : "مغلق"}
+                </span>
+              </div>
+              <p className="mt-2 text-[11.5px] text-muted-foreground">{r.description}</p>
+              {r.photos.length > 0 && (
+                <div className="mt-2 flex gap-1.5">
+                  {r.photos.map((p, i) => (
+                    <img key={i} src={p} alt={`صورة البلاغ ${i + 1}`} className="h-14 w-14 rounded-lg border border-border object-cover" />
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <EnvReportDialog open={open} onClose={() => setOpen(false)} />
+    </div>
   );
 }
 

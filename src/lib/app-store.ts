@@ -138,6 +138,7 @@ const initial: State = {
     expires: "31/12/2026",
     status: "active",
   },
+  envReports: [],
 };
 
 function load(): State {
@@ -228,6 +229,18 @@ export const store = {
       title: payload.title, body: payload.body, tone, at: Date.now(), for: t,
     }));
     set({ notifications: [...items, ...state.notifications].slice(0, 80) });
+  },
+
+  // environmental reports (صحة المجتمع → الوزارة)
+  submitEnvReport(r: Omit<EnvReport, "id" | "at" | "status">) {
+    const item: EnvReport = { ...r, id: `ENV-${Date.now()}`, at: Date.now(), status: "new" };
+    set({ envReports: [item, ...state.envReports].slice(0, 40) });
+    pushNotification({ title: "بلاغ بيئي جديد", body: `${r.governorate} — ${r.location}`, tone: r.severity === "critical" ? "danger" : "warn", for: "ministry" });
+    pushNotification({ title: "تم استلام بلاغك البيئي", body: `${r.location} — قيد المراجعة`, tone: "success", for: "community" });
+    return item;
+  },
+  updateEnvReportStatus(id: string, status: EnvReport["status"]) {
+    set({ envReports: state.envReports.map((r) => (r.id === id ? { ...r, status } : r)) });
   },
 
   // notifications

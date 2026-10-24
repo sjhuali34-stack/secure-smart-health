@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import {
   User, Stethoscope, Pill, HeartPulse, FlaskConical, ScanLine,
   Activity, Building2, ShieldCheck, Fingerprint, ScanFace, KeyRound,
-  CreditCard, ArrowLeft, Globe, Lock, HeartHandshake, Dumbbell, Microscope,
+  CreditCard, ArrowLeft, Globe, Lock, HeartHandshake, Dumbbell, Microscope, Landmark,
 } from "lucide-react";
 import { store, type RoleId } from "@/lib/app-store";
 import { RegisterCitizenDialog } from "@/components/app-dialogs";
@@ -28,7 +28,7 @@ type Role = {
   name: string;
   desc: string;
   icon: React.ComponentType<{ className?: string }>;
-  to: "/citizen" | "/doctor" | "/pharmacist" | "/nurse" | "/lab" | "/radiology" | "/emergency" | "/ministry" | "/community" | "/physio" | "/research";
+  to: "/citizen" | "/doctor" | "/pharmacist" | "/nurse" | "/lab" | "/radiology" | "/emergency" | "/ministry" | "/community" | "/physio" | "/research" | "/authorities";
 };
 
 const ROLES: Role[] = [
@@ -43,6 +43,7 @@ const ROLES: Role[] = [
   { id: "community", name: "صحة المجتمع", desc: "زيارات وحملات", icon: HeartHandshake, to: "/community" },
   { id: "physio", name: "العلاج الطبيعي", desc: "جلسات التأهيل", icon: Dumbbell, to: "/physio" },
   { id: "research", name: "البحث العلمي", desc: "بيانات مجهولة الهوية", icon: Microscope, to: "/research" },
+  { id: "authorities", name: "الهيئات الصحية", desc: "دليل المؤسسات والجاهزية", icon: Landmark, to: "/authorities" },
 ];
 
 type Method = { id: string; name: string; icon: React.ComponentType<{ className?: string }> };

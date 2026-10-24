@@ -4,7 +4,8 @@ import { useSyncExternalStore } from "react";
 
 export type RoleId =
   | "citizen" | "doctor" | "pharmacist" | "nurse" | "lab"
-  | "radiology" | "emergency" | "ministry" | "community" | "physio" | "research";
+  | "radiology" | "emergency" | "ministry" | "community" | "physio" | "research"
+  | "authorities";
 
 export type Notification = {
   id: string;
@@ -86,6 +87,20 @@ export type Insurance = {
   status: "active" | "expired";
 };
 
+// بلاغ بيئي ميداني من صحة المجتمع → وزارة الصحة
+export type EnvReport = {
+  id: string;
+  type: import("@/lib/env-data").EnvHazardType;
+  severity: import("@/lib/env-data").EnvSeverity;
+  governorate: string;
+  location: string;
+  description: string;
+  photos: string[];      // small JPEG data URLs
+  reporter: string;
+  at: number;
+  status: "new" | "reviewing" | "dispatched" | "closed";
+};
+
 type State = {
   session: Session;
   notifications: Notification[];
@@ -95,9 +110,10 @@ type State = {
   citizens: Citizen[];
   family: FamilyMember[];
   insurance: Insurance;
+  envReports: EnvReport[];
 };
 
-const KEY = "ur-sehr-store-v2";
+const KEY = "ur-sehr-store-v3";
 const initial: State = {
   session: null,
   notifications: [
@@ -122,6 +138,7 @@ const initial: State = {
     expires: "31/12/2026",
     status: "active",
   },
+  envReports: [],
 };
 
 function load(): State {
@@ -212,6 +229,18 @@ export const store = {
       title: payload.title, body: payload.body, tone, at: Date.now(), for: t,
     }));
     set({ notifications: [...items, ...state.notifications].slice(0, 80) });
+  },
+
+  // environmental reports (صحة المجتمع → الوزارة)
+  submitEnvReport(r: Omit<EnvReport, "id" | "at" | "status">) {
+    const item: EnvReport = { ...r, id: `ENV-${Date.now()}`, at: Date.now(), status: "new" };
+    set({ envReports: [item, ...state.envReports].slice(0, 40) });
+    pushNotification({ title: "بلاغ بيئي جديد", body: `${r.governorate} — ${r.location}`, tone: r.severity === "critical" ? "danger" : "warn", for: "ministry" });
+    pushNotification({ title: "تم استلام بلاغك البيئي", body: `${r.location} — قيد المراجعة`, tone: "success", for: "community" });
+    return item;
+  },
+  updateEnvReportStatus(id: string, status: EnvReport["status"]) {
+    set({ envReports: state.envReports.map((r) => (r.id === id ? { ...r, status } : r)) });
   },
 
   // notifications

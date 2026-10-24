@@ -1,3 +1,6 @@
 - [x] Add filtered, anonymized research questions and streamed grounded answers.
 - [ ] Verify privacy, filtering, live answers and app health.
 - [x] Apply required package security update.
+- [ ] Environmental surveillance map for the ministry (Iraq map with hazard hotspots).
+- [ ] Community health environmental hazard reporting with photo upload.
+- [ ] Health authorities interface (/authorities).

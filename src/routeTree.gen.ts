@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthoritiesRouteImport } from './routes/authorities'
 import { Route as CitizenRouteImport } from './routes/citizen'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as DoctorRouteImport } from './routes/doctor'
@@ -26,6 +27,11 @@ import { Route as ApiResearchAnswerRouteImport } from './routes/api/research-ans
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthoritiesRoute = AuthoritiesRouteImport.update({
+  id: '/authorities',
+  path: '/authorities',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CitizenRoute = CitizenRouteImport.update({
@@ -91,6 +97,7 @@ const ApiResearchAnswerRoute = ApiResearchAnswerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/authorities': typeof AuthoritiesRoute
   '/citizen': typeof CitizenRoute
   '/community': typeof CommunityRoute
   '/doctor': typeof DoctorRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/authorities': typeof AuthoritiesRoute
   '/citizen': typeof CitizenRoute
   '/community': typeof CommunityRoute
   '/doctor': typeof DoctorRoute
@@ -122,6 +130,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/authorities': typeof AuthoritiesRoute
   '/citizen': typeof CitizenRoute
   '/community': typeof CommunityRoute
   '/doctor': typeof DoctorRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/authorities'
     | '/citizen'
     | '/community'
     | '/doctor'
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/authorities'
     | '/citizen'
     | '/community'
     | '/doctor'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/authorities'
     | '/citizen'
     | '/community'
     | '/doctor'
@@ -185,6 +197,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthoritiesRoute: typeof AuthoritiesRoute
   CitizenRoute: typeof CitizenRoute
   CommunityRoute: typeof CommunityRoute
   DoctorRoute: typeof DoctorRoute
@@ -206,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/authorities': {
+      id: '/authorities'
+      path: '/authorities'
+      fullPath: '/authorities'
+      preLoaderRoute: typeof AuthoritiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/citizen': {
@@ -297,6 +317,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthoritiesRoute: AuthoritiesRoute,
   CitizenRoute: CitizenRoute,
   CommunityRoute: CommunityRoute,
   DoctorRoute: DoctorRoute,
